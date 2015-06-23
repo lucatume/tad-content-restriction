@@ -1,0 +1,42 @@
+{
+  "name": "lucatume/tad-conntent-restriction",
+  "type": "wordpress-plugin",
+  "description": "A WordPress content restriction framework",
+  "license": "GPL 2.0",
+  "authors": [
+    {
+      "name": "Luca Tumedei",
+      "email": "luca@theaveragedev.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/lucatume/wp-browser.git"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0",
+    "xrstf/composer-php52": "1.*"
+  },
+  "require-dev": {
+    "lucatume/wp-browser": "master@dev"
+  },
+  "autoload": {
+    "psr-0": {
+      "trc_": "src/"
+    }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "xrstf\\Composer52\\Generator::onPostInstallCmd"
+    ],
+    "post-update-cmd": [
+      "xrstf\\Composer52\\Generator::onPostInstallCmd"
+    ],
+    "post-autoload-dump": [
+      "xrstf\\Composer52\\Generator::onPostInstallCmd"
+    ]
+  }
+}
