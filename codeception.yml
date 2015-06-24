@@ -11,43 +11,44 @@ settings:
 modules:
     config:
         Db:
-            dsn: 'mysql:host=localhost;dbname=wordpress-tests'
+            dsn: 'mysql:host=localhost;dbname=wp-tests'
             user: root
             password: root
             dump: tests/_data/dump.sql
         WPBrowser:
-            url: 'http://wp.local'
+            url: 'http://sidea.dev'
             adminUsername: admin
             adminPassword: admin
             adminUrl: /wp-admin
         WPDb:
-            dsn: 'mysql:host=localhost;dbname=wordpress-tests'
+            dsn: 'mysql:host=localhost;dbname=wp-tests'
             user: root
             password: root
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            url: 'http://wp.local'
+            url: 'http://sidea.dev'
             tablePrefix: wp_
             checkExistence: true
             update: true
         WPLoader:
-            wpRootFolder: ~/www/wordpress
-            dbName: wordpress-tests
+            wpRootFolder: /Users/Luca/Sites/sidea/wp
+            dbName: wp-tests
             dbHost: localhost
             dbUser: root
             dbPassword: root
             wpDebug: true
             dbCharset: utf8
             dbCollate: ''
+            multisite: false
             tablePrefix: wp_
-            domain: wp.local
-            adminEmail: admin@wp.local
+            domain: sidea.dev
+            adminEmail: admin@sidea.dev
             title: 'WP Tests'
             phpBinary: php
             language: ''
         WPWebDriver:
-            url: 'http://wp.local'
+            url: 'http://sidea.dev'
             browser: phantomjs
             port: 4444
             restart: true

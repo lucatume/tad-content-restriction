@@ -4,11 +4,6 @@
 class trc_QueryRestrictor {
 
 	/**
-	 * @var trc_User
-	 */
-	protected $user;
-
-	/**
 	 * @var trc_PostTypes
 	 */
 	protected $post_types;
@@ -18,12 +13,17 @@ class trc_QueryRestrictor {
 	 */
 	protected $taxonomies;
 
+	/**
+	 * @var trc_FilteringTaxonomy
+	 */
+	protected $filtering_taxonomy;
+
 	public static function instance() {
 		$instance = new self;
 
-		$instance->post_types = trc_PostTypes::instance();
-		$instance->taxonomies = trc_Taxonomies::instance();
-		$instance->user       = trc_User::instance();
+		$instance->post_types         = trc_PostTypes::instance();
+		$instance->taxonomies         = trc_Taxonomies::instance();
+		$instance->filtering_taxonomy = trc_FilteringTaxonomy::instance();
 
 		return $instance;
 	}
@@ -37,47 +37,26 @@ class trc_QueryRestrictor {
 	}
 
 	public function maybe_restrict_query( WP_Query &$query ) {
-		if ( ! $this->should_be_restricted( $query ) ) {
-			return;
-		}
-		if ( ! $this->is_restricted_post_type( $query ) ) {
+		if ( ! $this->should_restrict_query( $query ) ) {
 			return;
 		}
 
-		if ( current_user_can( 'edit_others_posts' ) ) {
-			return $query;
-		}
-
-		$taxonomies = $this->get_restricting_taxonomies();
-
-		if ( empty( $taxonomies ) ) {
-			return;
-		}
-
-		foreach ( $taxonomies as $restricting_tax_name ) {
-			$tax_query                   = [
-				[
-					'taxonomy' => $restricting_tax_name,
-					'field'    => 'slug',
-					'terms'    => $this->user->get_content_access_slugs(),
-					'operator' => 'IN'
-				]
-			];
-			$query->tax_query->queries[] = $tax_query;
-		}
-		$query->query_vars['tax_query'] = $query->tax_query->queries;
-
-		return $query;
+		$this->restrict_query( $query );
 	}
 
 	protected function should_be_restricted( WP_Query &$query ) {
-		$no_restriction = $query->get( 'no_restriction', false ) == true;
+		$should_be_restricted = ! $query->get( 'no_restriction', false );
 
-		return apply_filters( 'trc_should_be_restricted', $no_restriction, $query );
+		return apply_filters( 'trc_should_be_restricted', $should_be_restricted, $query );
 	}
 
 	protected function is_restricted_post_type( WP_Query $query ) {
-		$is_restricted_post_type = count( array_intersect( $query->get( 'post_type' ), $this->get_restricted_post_types() ) ) > 0;
+		$post_types = $query->get( 'post_type' );
+		if ( empty( $post_types ) ) {
+			return false;
+		}
+		$post_types              = is_array( $post_types ) ? $post_types : array( $post_types );
+		$is_restricted_post_type = count( array_intersect( $post_types, $this->get_restricted_post_types() ) ) > 0;
 
 		return apply_filters( 'trc_is_restricted_post_type', $is_restricted_post_type, $query );
 	}
@@ -88,5 +67,65 @@ class trc_QueryRestrictor {
 
 	protected function get_restricting_taxonomies() {
 		return $this->taxonomies->get_restricting_taxonomies();
+	}
+
+	/**
+	 * @param trc_PostTypes $post_types
+	 */
+	public function set_post_types( trc_PostTypes $post_types ) {
+		$this->post_types = $post_types;
+	}
+
+	/**
+	 * @param trc_Taxonomies $taxonomies
+	 */
+	public function set_taxonomies( trc_Taxonomies $taxonomies ) {
+		$this->taxonomies = $taxonomies;
+	}
+
+	/**
+	 * @param trc_FilteringTaxonomy $filtering_taxonomy
+	 */
+	public function set_filtering_taxonomy( $filtering_taxonomy ) {
+		$this->filtering_taxonomy = $filtering_taxonomy;
+	}
+
+	/**
+	 * @param WP_Query $query
+	 *
+	 * @return bool
+	 */
+	public function should_restrict_query( WP_Query &$query ) {
+		if ( ! $this->should_be_restricted( $query ) ) {
+			return false;
+		}
+
+		if ( ! $this->is_restricted_post_type( $query ) ) {
+			return false;
+		}
+
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			return false;
+		}
+
+		$taxonomies = $this->get_restricting_taxonomies();
+
+		if ( empty( $taxonomies ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param WP_Query $query
+	 */
+	public function restrict_query( WP_Query &$query ) {
+		$restricting_taxonomies = $this->get_restricting_taxonomies();
+
+		foreach ( $restricting_taxonomies as $restricting_tax_name ) {
+			$query->tax_query->queries[] = $this->filtering_taxonomy->get_array_for( $restricting_tax_name );
+		}
+		$query->query_vars['tax_query'] = $query->tax_query->queries;
 	}
 }
