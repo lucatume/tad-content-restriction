@@ -99,10 +99,9 @@ class trc_QueryRestrictor {
 	/**
 	 * @param trc_User $user
 	 */
-	public function set_user( $user ) {
+	public function set_user( trc_User $user ) {
 		$this->user = $user;
 	}
-
 
 	/**
 	 * @param trc_PostTypes $post_types
@@ -121,10 +120,13 @@ class trc_QueryRestrictor {
 	/**
 	 * @param trc_FilteringTaxonomy $filtering_taxonomy
 	 */
-	public function set_filtering_taxonomy( $filtering_taxonomy ) {
+	public function set_filtering_taxonomy( trc_FilteringTaxonomy $filtering_taxonomy ) {
 		$this->filtering_taxonomy = $filtering_taxonomy;
 	}
 
+	/**
+	 * @param trc_Queries $queries
+	 */
 	public function set_queries( trc_Queries $queries ) {
 		$this->queries = $queries;
 	}
