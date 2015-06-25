@@ -18,6 +18,16 @@ class trc_QueryRestrictor {
 	 */
 	protected $filtering_taxonomy;
 
+	/**
+	 * @var trc_Queries
+	 */
+	protected $queries;
+
+	/**
+	 * @var trc_User
+	 */
+	protected $user;
+
 	public static function instance() {
 		$instance = new self;
 
@@ -52,21 +62,22 @@ class trc_QueryRestrictor {
 	 * @return bool
 	 */
 	public function should_restrict_query( WP_Query &$query ) {
-		if ( ! $this->should_be_restricted( $query ) ) {
+		if ( empty( $this->taxonomies->get_restricting_taxonomies() ) ) {
 			return false;
 		}
 
-		if ( ! $this->is_restricted_post_type( $query ) ) {
+		if ( ! $this->queries->should_restrict_queries() ) {
+			return false;
+		}
+		if ( ! $this->queries->should_restrict_query( $query ) ) {
 			return false;
 		}
 
-		if ( current_user_can( 'edit_others_posts' ) ) {
+		if ( ! $this->post_types->is_restricted_post_type( $query->get( 'post_type' ) ) ) {
 			return false;
 		}
 
-		$taxonomies = $this->get_restricting_taxonomies();
-
-		if ( empty( $taxonomies ) ) {
+		if ( $this->user->can_access_query( $query ) ) {
 			return false;
 		}
 
@@ -77,7 +88,7 @@ class trc_QueryRestrictor {
 	 * @param WP_Query $query
 	 */
 	public function restrict_query( WP_Query &$query ) {
-		$restricting_taxonomies = $this->get_restricting_taxonomies();
+		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies();
 
 		foreach ( $restricting_taxonomies as $restricting_tax_name ) {
 			$query->tax_query->queries[] = $this->filtering_taxonomy->get_array_for( $restricting_tax_name );
@@ -85,30 +96,13 @@ class trc_QueryRestrictor {
 		$query->query_vars['tax_query'] = $query->tax_query->queries;
 	}
 
-	protected function should_be_restricted( WP_Query &$query ) {
-		$should_be_restricted = ! $query->get( 'no_restriction', false );
-
-		return apply_filters( 'trc_should_restrict_query', $should_be_restricted, $query );
+	/**
+	 * @param trc_User $user
+	 */
+	public function set_user( $user ) {
+		$this->user = $user;
 	}
 
-	protected function is_restricted_post_type( WP_Query $query ) {
-		$post_types = $query->get( 'post_type' );
-		if ( empty( $post_types ) ) {
-			return false;
-		}
-		$post_types              = is_array( $post_types ) ? $post_types : array( $post_types );
-		$is_restricted_post_type = count( array_intersect( $post_types, $this->get_restricted_post_types() ) ) > 0;
-
-		return apply_filters( 'trc_is_restricted_post_type', $is_restricted_post_type, $query );
-	}
-
-	protected function get_restricting_taxonomies() {
-		return $this->taxonomies->get_restricting_taxonomies();
-	}
-
-	protected function get_restricted_post_types() {
-		return $this->post_types->get_restricted_post_types();
-	}
 
 	/**
 	 * @param trc_PostTypes $post_types
@@ -129,5 +123,9 @@ class trc_QueryRestrictor {
 	 */
 	public function set_filtering_taxonomy( $filtering_taxonomy ) {
 		$this->filtering_taxonomy = $filtering_taxonomy;
+	}
+
+	public function set_queries( trc_Queries $queries ) {
+		$this->queries = $queries;
 	}
 }
