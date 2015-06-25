@@ -18,5 +18,5 @@ $plugin->url  = plugins_url( '/', __FILE__ );
 
 $plugin->query_vars          = trc_QueryVars::instance()->init();
 $plugin->admin_page          = trc_AdminPage::instance()->init();
-$plugin->template_restrictor = trc_TemplateRestrictor::instance()->init();
+$plugin->template_restrictor = trc_TemplateRedirector::instance()->init();
 $plugin->query_restrictor    = trc_QueryRestrictor::instance()->init();

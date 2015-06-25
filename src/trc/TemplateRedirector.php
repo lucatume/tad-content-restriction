@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_TemplateRestrictor {
+class trc_TemplateRedirector {
 
 	/**
 	 * @var trc_PostTypes
@@ -17,6 +17,11 @@ class trc_TemplateRestrictor {
 	 * @var trc_User
 	 */
 	protected $user;
+
+	/**
+	 * @var trc_Taxonomies
+	 */
+	protected $taxonomies;
 
 	public static function instance() {
 		$instance = new self;
@@ -37,6 +42,10 @@ class trc_TemplateRestrictor {
 	}
 
 	public function maybe_redirect( $template ) {
+		if ( empty( $this->taxonomies->get_restricting_taxonomies() ) ) {
+			return $template;
+		}
+
 		if ( ! $this->templates->should_restrict_template( $template ) ) {
 			return $template;
 		}
@@ -62,5 +71,9 @@ class trc_TemplateRestrictor {
 	 */
 	public function set_templates( $templates ) {
 		$this->templates = $templates;
+	}
+
+	public function set_taxonomies( trc_Taxonomies $taxonomies ) {
+		$this->taxonomies = $taxonomies;
 	}
 }

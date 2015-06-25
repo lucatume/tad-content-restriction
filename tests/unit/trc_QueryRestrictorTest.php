@@ -4,6 +4,14 @@ use tad\FunctionMocker\FunctionMocker as Test;
 
 class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 
+	public function setUp() {
+		Test::setUp();
+	}
+
+	public function tearDown() {
+		Test::tearDown();
+	}
+
 	/**
 	 * @test
 	 * it should be instantiatable
@@ -105,12 +113,72 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
 	}
 
-	protected function setUp() {
-		Test::setUp();
+	/**
+	 * @test
+	 * it should restrict the query if the user can not access it
+	 */
+	public function it_should_restrict_the_query_if_the_user_can_not_access_it() {
+		$sut = new trc_QueryRestrictor();
+
+		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$sut->set_taxonomies( $taxonomies );
+
+		$queries = Test::replace( 'trc_Queries' )->method( 'should_restrict_queries', true )
+		               ->method( 'should_restrict_query', true )->get();
+		$sut->set_queries( $queries );
+
+		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
+		$sut->set_post_types( $post_types );
+
+		$user = Test::replace( 'trc_User' )->method( 'can_access_query', false )->get();
+		$sut->set_user( $user );
+
+		Test::assertTrue( $sut->should_restrict_query( $this->get_mock_query() ) );
 	}
 
-	protected function tearDown() {
-		Test::tearDown();
+	/**
+	 * @test
+	 * it should add a restricting tax query if one restricting tax query is present
+	 */
+	public function it_should_add_a_restricting_tax_query_if_one_restricting_tax_query_is_present() {
+		$sut = new trc_QueryRestrictor();
+
+		$taxonomies = Test::replace( 'trc_Taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$sut->set_taxonomies( $taxonomies );
+
+		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxonomy' )->method( 'get_array_for', 'foo' )->get();
+		$sut->set_filtering_taxonomy( $filtering_taxonomy );
+
+		$query                     = $this->get_mock_query();
+		$query->tax_query          = new stdClass();
+		$query->tax_query->queries = [ 'here before' ];
+
+		$sut->restrict_query( $query );
+
+		Test::assertEquals( array( 'here before', 'foo' ), $query->tax_query->queries );
+	}
+
+	/**
+	 * @test
+	 * it should add a restricting tax query for each restricting taxonomy
+	 */
+	public function it_should_add_a_restricting_tax_query_for_each_restricting_taxonomy() {
+		$sut = new trc_QueryRestrictor();
+
+		$taxonomies = Test::replace( 'trc_Taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
+		                  ->get();
+		$sut->set_taxonomies( $taxonomies );
+
+		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxonomy' )->method( 'get_array_for', 'foo' )->get();
+		$sut->set_filtering_taxonomy( $filtering_taxonomy );
+
+		$query                     = $this->get_mock_query();
+		$query->tax_query          = new stdClass();
+		$query->tax_query->queries = [ 'here before' ];
+
+		$sut->restrict_query( $query );
+
+		Test::assertEquals( array( 'here before', 'foo', 'foo' ), $query->tax_query->queries );
 	}
 
 }
