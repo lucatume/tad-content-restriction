@@ -138,9 +138,9 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * it should add a restricting tax query if one restricting tax query is present
+	 * it should add a restricting tax query if one restricting taxonomy is present
 	 */
-	public function it_should_add_a_restricting_tax_query_if_one_restricting_tax_query_is_present() {
+	public function it_should_add_a_restricting_tax_query_if_one_restricting_taxonomy_is_present() {
 		$sut = new trc_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
@@ -151,11 +151,11 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 
 		$query                     = $this->get_mock_query();
 		$query->tax_query          = new stdClass();
-		$query->tax_query->queries = [ 'here before' ];
+		$query->tax_query->queries = [ ];
 
 		$sut->restrict_query( $query );
 
-		Test::assertEquals( array( 'here before', 'foo' ), $query->tax_query->queries );
+		Test::assertEquals( array( 'foo' ), $query->tax_query->queries );
 	}
 
 	/**
@@ -163,6 +163,29 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	 * it should add a restricting tax query for each restricting taxonomy
 	 */
 	public function it_should_add_a_restricting_tax_query_for_each_restricting_taxonomy() {
+		$sut = new trc_QueryRestrictor();
+
+		$taxonomies = Test::replace( 'trc_Taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
+		                  ->get();
+		$sut->set_taxonomies( $taxonomies );
+
+		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxonomy' )->method( 'get_array_for', 'foo' )->get();
+		$sut->set_filtering_taxonomy( $filtering_taxonomy );
+
+		$query                     = $this->get_mock_query();
+		$query->tax_query          = new stdClass();
+		$query->tax_query->queries = [ ];
+
+		$sut->restrict_query( $query );
+
+		Test::assertEquals( array( 'foo', 'foo' ), $query->tax_query->queries );
+	}
+
+	/**
+	 * @test
+	 * it should leave previous tax queries in place when adding restricting tax queries
+	 */
+	public function it_should_leave_previous_tax_queries_in_place_when_adding_restricting_tax_queries() {
 		$sut = new trc_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
