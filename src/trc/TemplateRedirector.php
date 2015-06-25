@@ -54,7 +54,7 @@ class trc_TemplateRedirector {
 			return $template;
 		}
 
-		if ( $this->user->can_access_template( $template ) ) {
+		if ( $this->user->can_access_post() ) {
 			return $template;
 		}
 

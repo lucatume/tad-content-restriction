@@ -65,9 +65,9 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * it should not redirect if user can access template
+	 * it should not redirect if user can access post
 	 */
-	public function it_should_not_redirect_if_user_can_access_template() {
+	public function it_should_not_redirect_if_user_can_access_post() {
 		$sut = new trc_TemplateRedirector();
 
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
@@ -81,7 +81,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
 		$sut->set_post_types( $post_types );
 
-		$user = Test::replace( 'trc_User' )->method( 'can_access_template', true )->get();
+		$user = Test::replace( 'trc_User' )->method( 'can_access_post', true )->get();
 		$sut->set_user( $user );
 
 		Test::assertEquals( 'foo', $sut->maybe_redirect( 'foo' ) );
@@ -89,9 +89,9 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * it should redirect if user has no access to template
+	 * it should redirect if user has no access to post
 	 */
-	public function it_should_redirect_if_user_has_no_access_to_template() {
+	public function it_should_redirect_if_user_has_no_access_to_post() {
 		$sut = new trc_TemplateRedirector();
 
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
@@ -106,7 +106,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
 		$sut->set_post_types( $post_types );
 
-		$user = Test::replace( 'trc_User' )->method( 'can_access_template', false )->get();
+		$user = Test::replace( 'trc_User' )->method( 'can_access_post', false )->get();
 		$sut->set_user( $user );
 
 		Test::assertEquals( '403.php', $sut->maybe_redirect( 'foo' ) );

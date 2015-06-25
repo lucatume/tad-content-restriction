@@ -44,7 +44,23 @@ class trc_User {
 			$can_access = true;
 		}
 
+		//@todo: add access logic here
+
 		return apply_filters( 'trc_user_can_access_query', $can_access, $query, $this->wp_user );
 
+	}
+
+	public function can_access_post() {
+		$can_access = false;
+
+		if ( $this->wp_user->has_cap( 'edit_other_posts' ) ) {
+			$can_access = true;
+		}
+
+		//@todo: add access logic here
+
+		$post = get_post();
+
+		return apply_filters( 'trc_user_can_access_post', $can_access, $post, $this->wp_user );
 	}
 }
