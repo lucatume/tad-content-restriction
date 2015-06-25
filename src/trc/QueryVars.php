@@ -9,6 +9,8 @@ class trc_QueryVars {
 
 	public function init() {
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
+
+		return $this;
 	}
 
 	public function query_vars( array $vars ) {

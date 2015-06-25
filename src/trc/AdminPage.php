@@ -8,5 +8,6 @@ class trc_AdminPage {
 	}
 
 	public function init() {
+		return $this;
 	}
 }
