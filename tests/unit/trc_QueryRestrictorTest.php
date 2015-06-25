@@ -41,7 +41,7 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * it should not restrict the query if queries are not to be restricted
 	 */
-	public function it_should_not_restrict_the_query_if_no_restriction_is_true() {
+	public function it_should_not_restrict_the_query_if_queries_are_not_to_be_restricted() {
 		$sut = new trc_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
