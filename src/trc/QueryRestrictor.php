@@ -99,7 +99,7 @@ class trc_QueryRestrictor {
 	/**
 	 * @param trc_User $user
 	 */
-	public function set_user( trc_User $user ) {
+	public function set_user( trc_UserInterface $user ) {
 		$this->user = $user;
 	}
 

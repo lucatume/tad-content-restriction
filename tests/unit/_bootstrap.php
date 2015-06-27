@@ -1,17 +1,6 @@
 <?php
 // Here you can initialize variables that will be available to your tests
-use tad\FunctionMocker\FunctionMocker;
 
-FunctionMocker::init();
-
-function find_file( $path, $file = __FILE__ ) {
-	$dir  = dirname( $file );
-	$path = ltrim( $path, DIRECTORY_SEPARATOR );
-	while ( ! file_exists( $candidate = $dir . DIRECTORY_SEPARATOR . $path ) ) {
-		$dir = dirname( $dir );
-	}
-
-	return $candidate;
-}
-
-include_once find_file( 'wp-includes', __FILE__ ) . '/query.php';
+// Includes some files defining WP classes mocked in tests
+require_once find_file_in_parent( 'wp-includes/query.php' );
+require_once find_file_in_parent( 'wp-includes/capabilities.php' );

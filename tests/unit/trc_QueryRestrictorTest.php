@@ -107,7 +107,7 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
 		$sut->set_post_types( $post_types );
 
-		$user = Test::replace( 'trc_User' )->method( 'can_access_query', true )->get();
+		$user = Test::replace( 'trc_UserInterface' )->method( 'can_access_query', true )->get();
 		$sut->set_user( $user );
 
 		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
@@ -130,7 +130,7 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
 		$sut->set_post_types( $post_types );
 
-		$user = Test::replace( 'trc_User' )->method( 'can_access_query', false )->get();
+		$user = Test::replace( 'trc_UserInterface' )->method( 'can_access_query', false )->get();
 		$sut->set_user( $user );
 
 		Test::assertTrue( $sut->should_restrict_query( $this->get_mock_query() ) );

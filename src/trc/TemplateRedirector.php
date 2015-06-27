@@ -62,7 +62,7 @@ class trc_TemplateRedirector {
 		return $this->templates->get_redirection_template();
 	}
 
-	public function set_user( trc_User $user ) {
+	public function set_user( trc_UserInterface $user ) {
 		$this->user = $user;
 	}
 

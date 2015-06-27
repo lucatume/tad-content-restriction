@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_User {
+class trc_User implements trc_UserInterface {
 
 	/**
 	 * @var WP_User
@@ -20,9 +20,12 @@ class trc_User {
 		$this->wp_user = $user;
 	}
 
-	public function get_content_access_slugs() {
+	public function get_content_access_slugs( $taxonomy ) {
+		// @todo use user slug taxonomy provider class here
 		$user_meta_key = trc_Plugin::instance()->user_content_access_slug_meta_key;
-		$slugs         = get_user_meta( get_current_user_id(), $user_meta_key );
+		$slugs         = get_user_meta( get_current_user_id(), $user_meta_key, true );
+
+		$slugs = isset( $slugs[ $taxonomy ] ) ? $slugs[ $taxonomy ] : array();
 
 		return apply_filters( 'trc_user_content_access_slugs', $slugs, get_current_user() );
 	}
@@ -40,7 +43,7 @@ class trc_User {
 
 	}
 
-	public function can_access_post() {
+	public function can_access_post( $post = null ) {
 		$can_access = false;
 
 		if ( $this->wp_user->has_cap( 'edit_other_posts' ) ) {

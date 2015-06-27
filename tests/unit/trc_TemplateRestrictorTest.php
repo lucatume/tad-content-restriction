@@ -81,7 +81,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
 		$sut->set_post_types( $post_types );
 
-		$user = Test::replace( 'trc_User' )->method( 'can_access_post', true )->get();
+		$user = Test::replace( 'trc_UserInterface' )->method( 'can_access_post', true )->get();
 		$sut->set_user( $user );
 
 		Test::assertEquals( 'foo', $sut->maybe_redirect( 'foo' ) );
@@ -106,7 +106,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
 		$sut->set_post_types( $post_types );
 
-		$user = Test::replace( 'trc_User' )->method( 'can_access_post', false )->get();
+		$user = Test::replace( 'trc_UserInterface' )->method( 'can_access_post', false )->get();
 		$sut->set_user( $user );
 
 		Test::assertEquals( '403.php', $sut->maybe_redirect( 'foo' ) );
