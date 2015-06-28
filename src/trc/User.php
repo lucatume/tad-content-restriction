@@ -43,17 +43,28 @@ class trc_User implements trc_UserInterface {
 
 	}
 
+	/**
+	 * @param int|WP_Post|null $post A post ID, a post object or null to use the current globally defined post.
+	 *
+	 * @return bool True if the user can access the post, false otherwise.
+	 */
 	public function can_access_post( $post = null ) {
+		$post = get_post( $post );
+
+		if ( empty( $post ) ) {
+			// the user cannot access a non-existing content
+			return false;
+		}
+
 		$can_access = false;
 
-		if ( $this->wp_user->has_cap( 'edit_other_posts' ) ) {
-			$can_access = true;
-		}
+//		if ( $this->wp_user->has_cap( 'edit_other_posts' ) ) {
+//			$can_access = true;
+//		}
 
 		//@todo: add access logic here
 
-		$post = get_post();
-
 		return apply_filters( 'trc_user_can_access_post', $can_access, $post, $this->wp_user );
 	}
+
 }
