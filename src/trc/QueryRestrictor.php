@@ -34,6 +34,7 @@ class trc_QueryRestrictor {
 		$instance->post_types         = trc_PostTypes::instance();
 		$instance->taxonomies         = trc_Taxonomies::instance();
 		$instance->filtering_taxonomy = trc_FilteringTaxonomy::instance();
+		$instance->queries            = trc_Queries::instance();
 
 		return $instance;
 	}
