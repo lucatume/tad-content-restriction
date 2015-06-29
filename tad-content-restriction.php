@@ -18,6 +18,8 @@ if ( ! function_exists( 'trc_load' ) ) {
 		$plugin->file = __FILE__;
 		$plugin->url  = plugins_url( '/', __FILE__ );
 
+		$plugin->taxonomies          = trc_Taxonomies::instance();
+		$plugin->user                = trc_User::instance();
 		$plugin->query_vars          = trc_QueryVars::instance()->init();
 		$plugin->admin_page          = trc_AdminPage::instance()->init();
 		$plugin->template_redirector = trc_TemplateRedirector::instance()->init();
