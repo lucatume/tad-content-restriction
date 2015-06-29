@@ -27,6 +27,9 @@ class trc_TemplateRedirector {
 		$instance = new self;
 
 		$instance->set_post_types( trc_PostTypes::instance() );
+		$instance->set_user( trc_User::instance() );
+		$instance->set_taxonomies( trc_Taxonomies::instance() );
+		$instance->set_templates( trc_Templates::instance() );
 
 		return $instance;
 	}
