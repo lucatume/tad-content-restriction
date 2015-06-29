@@ -16,7 +16,7 @@ modules:
             password: root
             dump: tests/_data/dump.sql
         WPBrowser:
-            url: 'http://local.wordpress.dev'
+            url: 'http://wp.dev'
             adminUsername: admin
             adminPassword: admin
             adminUrl: /wp-admin
@@ -27,7 +27,7 @@ modules:
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            url: 'http://local.wordpress.dev'
+            url: 'http://wp.dev'
             tablePrefix: wp_
             checkExistence: true
             update: true
@@ -41,13 +41,13 @@ modules:
             dbCharset: utf8
             dbCollate: ''
             tablePrefix: wp_
-            domain: local.wordpress.dev
-            adminEmail: admin@local.wordpress.dev
+            domain: wp.dev
+            adminEmail: admin@wp.dev
             title: 'WP Tests'
             phpBinary: php
             language: ''
         WPWebDriver:
-            url: 'http://local.wordpress.dev'
+            url: 'http://wp.dev'
             browser: phantomjs
             port: 4444
             restart: true
