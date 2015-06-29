@@ -9,7 +9,7 @@ class trc_TemplateRedirector {
 	protected $post_types;
 
 	/**
-	 * @var trc_Templates
+	 * @var trc_TemplatesInterface
 	 */
 	protected $templates;
 
@@ -62,18 +62,24 @@ class trc_TemplateRedirector {
 		return $this->templates->get_redirection_template();
 	}
 
+	/**
+	 * @param trc_UserInterface $user
+	 */
 	public function set_user( trc_UserInterface $user ) {
 		$this->user = $user;
 	}
 
 	/**
-	 * @param trc_Templates $templates
+	 * @param trc_TemplatesInterface $templates
 	 */
-	public function set_templates( $templates ) {
+	public function set_templates( trc_TemplatesInterface $templates ) {
 		$this->templates = $templates;
 	}
 
-	public function set_taxonomies( trc_Taxonomies $taxonomies ) {
+	/**
+	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 */
+	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
 		$this->taxonomies = $taxonomies;
 	}
 }

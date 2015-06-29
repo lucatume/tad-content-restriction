@@ -36,7 +36,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$templates = Test::replace( 'trc_Templates' )->method( 'should_restrict_template', false )->get();
+		$templates = Test::replace( 'trc_TemplatesInterface' )->method( 'should_restrict_template', false )->get();
 		$sut->set_templates( $templates );
 
 		Test::assertEquals( 'foo', $sut->maybe_redirect( 'foo' ) );
@@ -52,7 +52,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$templates = Test::replace( 'trc_Templates' )->method( 'should_restrict_template', true )->get();
+		$templates = Test::replace( 'trc_TemplatesInterface' )->method( 'should_restrict_template', true )->get();
 		$sut->set_templates( $templates );
 
 		Test::replace( 'get_post_type', 'post' );
@@ -73,7 +73,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$templates = Test::replace( 'trc_Templates' )->method( 'should_restrict_template', true )->get();
+		$templates = Test::replace( 'trc_TemplatesInterface' )->method( 'should_restrict_template', true )->get();
 		$sut->set_templates( $templates );
 
 		Test::replace( 'get_post_type', 'post' );
@@ -97,7 +97,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$templates = Test::replace( 'trc_Templates' )->method( 'should_restrict_template', true )
+		$templates = Test::replace( 'trc_TemplatesInterface' )->method( 'should_restrict_template', true )
 		                 ->method( 'get_redirection_template', '403.php' )->get();
 		$sut->set_templates( $templates );
 

@@ -11,12 +11,18 @@
 
 include 'vendor/autoload_52.php';
 
-$plugin = trc_Plugin::instance();
+if ( ! function_exists( 'trc_load' ) ) {
+	function trc_load() {
+		$plugin = trc_Plugin::instance();
 
-$plugin->file = __FILE__;
-$plugin->url  = plugins_url( '/', __FILE__ );
+		$plugin->file = __FILE__;
+		$plugin->url  = plugins_url( '/', __FILE__ );
 
-$plugin->query_vars          = trc_QueryVars::instance()->init();
-$plugin->admin_page          = trc_AdminPage::instance()->init();
-$plugin->template_restrictor = trc_TemplateRedirector::instance()->init();
-$plugin->query_restrictor    = trc_QueryRestrictor::instance()->init();
+		$plugin->query_vars          = trc_QueryVars::instance()->init();
+		$plugin->admin_page          = trc_AdminPage::instance()->init();
+		$plugin->template_restrictor = trc_TemplateRedirector::instance()->init();
+		$plugin->query_restrictor    = trc_QueryRestrictor::instance()->init();
+	}
+}
+
+add_action( 'plugins_loaded', 'trc_load', 9 );

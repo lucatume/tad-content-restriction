@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Queries {
+class trc_Queries implements trc_QueriesInterface {
 
 	public static function instance() {
 		return new self;

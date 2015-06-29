@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Templates {
+class trc_Templates implements trc_TemplatesInterface {
 
 	public static function instance() {
 		return new self;
@@ -27,7 +27,7 @@ class trc_Templates {
 		return apply_filters( 'trc_should_restrict_template', $should_restrict_template, $template );
 	}
 
-	protected function get_unrestricted_templates() {
+	public function get_unrestricted_templates() {
 		$unrestricted = array(
 			'index.php',
 			'home.php',

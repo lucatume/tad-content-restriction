@@ -19,7 +19,7 @@ class trc_QueryRestrictor {
 	protected $filtering_taxonomy;
 
 	/**
-	 * @var trc_Queries
+	 * @var trc_QueriesInterface
 	 */
 	protected $queries;
 
@@ -104,30 +104,30 @@ class trc_QueryRestrictor {
 	}
 
 	/**
-	 * @param trc_PostTypes $post_types
+	 * @param trc_PostTypesInterface $post_types
 	 */
-	public function set_post_types( trc_PostTypes $post_types ) {
+	public function set_post_types( trc_PostTypesInterface $post_types ) {
 		$this->post_types = $post_types;
 	}
 
 	/**
-	 * @param trc_Taxonomies $taxonomies
+	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
 	 */
-	public function set_taxonomies( trc_Taxonomies $taxonomies ) {
+	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
 		$this->taxonomies = $taxonomies;
 	}
 
 	/**
-	 * @param trc_FilteringTaxonomy $filtering_taxonomy
+	 * @param trc_FilteringTaxonomyInterface $filtering_taxonomy
 	 */
-	public function set_filtering_taxonomy( trc_FilteringTaxonomy $filtering_taxonomy ) {
+	public function set_filtering_taxonomy( trc_FilteringTaxonomyInterface $filtering_taxonomy ) {
 		$this->filtering_taxonomy = $filtering_taxonomy;
 	}
 
 	/**
-	 * @param trc_Queries $queries
+	 * @param trc_QueriesInterface $queries
 	 */
-	public function set_queries( trc_Queries $queries ) {
+	public function set_queries( trc_QueriesInterface $queries ) {
 		$this->queries = $queries;
 	}
 }
