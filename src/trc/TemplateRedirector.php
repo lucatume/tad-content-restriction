@@ -4,7 +4,7 @@
 class trc_TemplateRedirector {
 
 	/**
-	 * @var trc_PostTypes
+	 * @var trc_PostTypesInterface
 	 */
 	protected $post_types;
 
@@ -14,12 +14,12 @@ class trc_TemplateRedirector {
 	protected $templates;
 
 	/**
-	 * @var trc_User
+	 * @var trc_UserInterface
 	 */
 	protected $user;
 
 	/**
-	 * @var trc_Taxonomies
+	 * @var trc_RestrictingTaxonomiesInterface
 	 */
 	protected $taxonomies;
 
@@ -31,7 +31,10 @@ class trc_TemplateRedirector {
 		return $instance;
 	}
 
-	public function set_post_types( trc_PostTypes $post_types ) {
+	/**
+	 * @param trc_PostTypesInterface $post_types
+	 */
+	public function set_post_types( trc_PostTypesInterface $post_types ) {
 		$this->post_types = $post_types;
 	}
 
