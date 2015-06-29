@@ -11,29 +11,29 @@ settings:
 modules:
     config:
         Db:
-            dsn: 'mysql:host=localhost;dbname=wordpress-tests'
+            dsn: 'mysql:host=localhost;dbname=wp-tests'
             user: root
             password: root
             dump: tests/_data/dump.sql
         WPBrowser:
-            url: 'http://wp.local'
+            url: 'http://local.wordpress.dev'
             adminUsername: admin
             adminPassword: admin
             adminUrl: /wp-admin
         WPDb:
-            dsn: 'mysql:host=localhost;dbname=wordpress-tests'
+            dsn: 'mysql:host=localhost;dbname=wp-tests'
             user: root
             password: root
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            url: 'http://wp.local'
+            url: 'http://local.wordpress.dev'
             tablePrefix: wp_
             checkExistence: true
             update: true
         WPLoader:
-            wpRootFolder: ~/www/wordpress
-            dbName: wordpress-tests
+            wpRootFolder: /Users/Luca/VVV/www/wordpress-default
+            dbName: wp-tests
             dbHost: localhost
             dbUser: root
             dbPassword: root
@@ -41,13 +41,13 @@ modules:
             dbCharset: utf8
             dbCollate: ''
             tablePrefix: wp_
-            domain: wp.local
-            adminEmail: admin@wp.local
+            domain: local.wordpress.dev
+            adminEmail: admin@local.wordpress.dev
             title: 'WP Tests'
             phpBinary: php
             language: ''
         WPWebDriver:
-            url: 'http://wp.local'
+            url: 'http://local.wordpress.dev'
             browser: phantomjs
             port: 4444
             restart: true
