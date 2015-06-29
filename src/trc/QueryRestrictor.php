@@ -4,17 +4,17 @@
 class trc_QueryRestrictor {
 
 	/**
-	 * @var trc_PostTypes
+	 * @var trc_PostTypesInterface
 	 */
 	protected $post_types;
 
 	/**
-	 * @var trc_Taxonomies
+	 * @var trc_RestrictingTaxonomiesInterface
 	 */
 	protected $taxonomies;
 
 	/**
-	 * @var trc_FilteringTaxonomy
+	 * @var trc_FilteringTaxonomyInterface
 	 */
 	protected $filtering_taxonomy;
 
@@ -97,7 +97,7 @@ class trc_QueryRestrictor {
 	}
 
 	/**
-	 * @param trc_User $user
+	 * @param trc_UserInterface $user
 	 */
 	public function set_user( trc_UserInterface $user ) {
 		$this->user = $user;
