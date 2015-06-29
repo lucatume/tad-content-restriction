@@ -21,7 +21,7 @@ class trc_User implements trc_UserInterface {
 	public static function instance() {
 		$instance = new self;
 
-		$instance->set_user( get_current_user() );
+		$instance->set_user( get_user_by( 'id', get_current_user_id() ) );
 
 		return $instance;
 	}
