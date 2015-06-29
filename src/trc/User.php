@@ -8,6 +8,16 @@ class trc_User implements trc_UserInterface {
 	 */
 	protected $wp_user;
 
+	/**
+	 * @var trc_UserSlugProviderInterface[]
+	 */
+	protected $user_slug_providers = array();
+
+	/**
+	 * @var trc_RestrictingTaxonomiesInterface
+	 */
+	protected $taxonomies;
+
 	public static function instance() {
 		$instance = new self;
 
@@ -31,40 +41,84 @@ class trc_User implements trc_UserInterface {
 	}
 
 	public function can_access_query( WP_Query $query ) {
-		$can_access = false;
 
-		if ( $this->wp_user->has_cap( 'edit_other_posts' ) ) {
-			$can_access = true;
-		}
-
-		//@todo: add access logic here
-
-		return apply_filters( 'trc_user_can_access_query', $can_access, $query, $this->wp_user );
+		return apply_filters( 'trc_user_can_access_query', true, $query, $this->wp_user );
 
 	}
 
 	/**
 	 * @param int|WP_Post|null $post A post ID, a post object or null to use the current globally defined post.
 	 *
-	 * @return bool True if the user can access the post, false otherwise.
+	 * @return bool|WP_Error True if the user can access the post, false if the user cannot access the post, a WP_Error
+	 *                       if the post parameter is not valid.
 	 */
 	public function can_access_post( $post = null ) {
-		$post = get_post( $post );
+
+		$post = empty( $post ) ? get_post() : get_post( $post );
 
 		if ( empty( $post ) ) {
-			// the user cannot access a non-existing content
-			return false;
+			return new WP_Error( 'invalid_post', 'The post parameter is not a valid post ID, post object or there is no globally defined post.' );
 		}
 
-		$can_access = false;
+		$taxonomies = $this->taxonomies->get_restricting_taxonomies();
 
-//		if ( $this->wp_user->has_cap( 'edit_other_posts' ) ) {
-//			$can_access = true;
-//		}
+		if ( empty( $taxonomies ) ) {
+			return true;
+		}
 
-		//@todo: add access logic here
+		if ( empty( $this->user_slug_providers ) ) {
+			return true;
+		}
 
-		return apply_filters( 'trc_user_can_access_post', $can_access, $post, $this->wp_user );
+		$can_access = 1;
+		foreach ( $taxonomies as $tax ) {
+			$slugs = wp_get_object_terms( $post->ID, $tax, array( 'fields' => 'slug' ) );
+			if ( empty( $slugs ) ) {
+				$can_access *= 1;
+				continue;
+			}
+
+			$user_slugs = $this->get_user_slugs_for( $tax );
+
+			if ( empty( $user_slugs ) ) {
+				$can_access = 0;
+				break;
+			}
+
+			$can_access *= count( array_intersect( $slugs, $user_slugs ) );
+		}
+
+		return apply_filters( 'trc_user_can_access_post', (bool) $can_access, $post, $this->wp_user );
+	}
+
+	protected function get_user_slugs_for( $tax ) {
+		if ( array_key_exists( $tax, $this->user_slug_providers ) ) {
+			$providers = $this->user_slug_providers;
+
+			return $providers[ $tax ]->get_user_slugs();
+		}
+
+		return array();
+	}
+
+	public function get_user_slug_providers() {
+		return $this->user_slug_providers;
+	}
+
+	public function add_user_slug_provider( $taxonomy, trc_UserSlugProviderInterface $user_slug_provider ) {
+		$this->user_slug_providers[ $taxonomy ] = $user_slug_provider;
+
+		return $this;
+	}
+
+	public function remove_user_slug_provider( $taxonomy ) {
+		$this->user_slug_providers = array_diff_key( $this->user_slug_providers, array( $taxonomy => 1 ) );
+
+		return $this;
+	}
+
+	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
+		$this->taxonomies = $taxonomies;
 	}
 
 }

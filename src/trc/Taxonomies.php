@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Taxonomies {
+class trc_Taxonomies implements trc_RestrictingTaxonomiesInterface {
 
 	public static function instance() {
 		return new self();
