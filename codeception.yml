@@ -32,7 +32,7 @@ modules:
             checkExistence: true
             update: true
         WPLoader:
-            wpRootFolder: /Users/Luca/VVV/www/wordpress-default
+            wpRootFolder: /Users/Luca/Sites/wp
             dbName: wp-tests
             dbHost: localhost
             dbUser: root
