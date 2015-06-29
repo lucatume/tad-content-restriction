@@ -10,7 +10,7 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 	 * it should be instantiatable
 	 */
 	public function it_should_be_instantiatable() {
-		Test::assertInstanceOf( 'trc_TemplateRedirector', trc_TemplateRedirector::instance() );
+		Test::assertInstanceOf( 'trc_TemplateRedirector', new trc_TemplateRedirector() );
 	}
 
 	/**
