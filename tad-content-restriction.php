@@ -25,4 +25,5 @@ if ( ! function_exists( 'trc_load' ) ) {
 	}
 }
 
+// allow plugins loading on default priority to assume restriction framework is up
 add_action( 'plugins_loaded', 'trc_load', 9 );
