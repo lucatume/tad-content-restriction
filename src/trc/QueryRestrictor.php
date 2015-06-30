@@ -23,16 +23,10 @@ class trc_QueryRestrictor {
 	 */
 	protected $queries;
 
-	/**
-	 * @var trc_UserInterface
-	 */
-	protected $user;
-
 	public static function instance() {
 		$instance = new self;
 
 		$instance->taxonomies         = trc_Plugin::instance()->taxonomies;
-		$instance->user               = trc_Plugin::instance()->user;
 		$instance->post_types         = trc_PostTypes::instance();
 		$instance->filtering_taxonomy = trc_FilteringTaxQueryGenerator::instance();
 		$instance->queries            = trc_Queries::instance();
@@ -79,10 +73,6 @@ class trc_QueryRestrictor {
 			return false;
 		}
 
-		if ( ! $this->user->can_access_query( $query ) ) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -96,13 +86,6 @@ class trc_QueryRestrictor {
 			$query->tax_query->queries[] = $this->filtering_taxonomy->get_tax_query_for( $restricting_tax_name );
 		}
 		$query->query_vars['tax_query'] = $query->tax_query->queries;
-	}
-
-	/**
-	 * @param trc_UserInterface $user
-	 */
-	public function set_user( trc_UserInterface $user ) {
-		$this->user = $user;
 	}
 
 	/**

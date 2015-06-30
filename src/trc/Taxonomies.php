@@ -20,10 +20,17 @@ class trc_Taxonomies implements trc_RestrictingTaxonomiesInterface {
 	}
 
 	public function add( $taxonomy ) {
+		if ( in_array( $taxonomy, $this->taxonomies ) ) {
+			return $this;
+		}
 		$this->taxonomies[] = $taxonomy;
+
+		return $this;
 	}
 
 	public function remove( $taxonomy ) {
 		$this->taxonomies = array_diff( $this->taxonomies, $taxonomy );
+
+		return $this;
 	}
 }

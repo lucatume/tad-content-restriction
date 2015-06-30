@@ -294,33 +294,6 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * it should allow the user to access the query by default
-	 */
-	public function it_should_allow_the_user_to_access_the_query_by_default() {
-		$sut   = new trc_User();
-		$query = Test::replace( 'WP_Query' )->get();
-
-		Test::assertTrue( $sut->can_access_query( $query ) );
-	}
-
-	/**
-	 * @test
-	 * it should allow for the filter to decide if user has access to query or not
-	 */
-	public function it_should_allow_for_the_filter_to_decide_if_user_has_access_to_query_or_not() {
-		$sut = new trc_User();
-
-		Test::replace( 'apply_filters', function ( $tag, $val ) {
-			return $tag == 'trc_user_can_access_query' ? false : $val;
-		} );
-
-		$query = Test::replace( 'WP_Query' )->get();
-
-		Test::assertFalse( $sut->can_access_query( $query ) );
-	}
-
-	/**
-	 * @test
 	 * it should allow filtering the user access to post
 	 */
 	public function it_should_allow_filtering_the_user_access_to_post() {

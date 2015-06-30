@@ -92,52 +92,6 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * it should not restrict the query if the user can access it
-	 */
-	public function it_should_not_restrict_the_query_if_the_user_can_access_it() {
-		$sut = new trc_QueryRestrictor();
-
-		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
-		$sut->set_taxonomies( $taxonomies );
-
-		$queries = Test::replace( 'trc_Queries' )->method( 'should_restrict_queries', true )
-		               ->method( 'should_restrict_query', true )->get();
-		$sut->set_queries( $queries );
-
-		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
-		$sut->set_post_types( $post_types );
-
-		$user = Test::replace( 'trc_UserInterface' )->method( 'can_access_query', true )->get();
-		$sut->set_user( $user );
-
-		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
-	}
-
-	/**
-	 * @test
-	 * it should restrict the query if the user can not access it
-	 */
-	public function it_should_restrict_the_query_if_the_user_can_not_access_it() {
-		$sut = new trc_QueryRestrictor();
-
-		$taxonomies = Test::replace( 'trc_taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
-		$sut->set_taxonomies( $taxonomies );
-
-		$queries = Test::replace( 'trc_Queries' )->method( 'should_restrict_queries', true )
-		               ->method( 'should_restrict_query', true )->get();
-		$sut->set_queries( $queries );
-
-		$post_types = Test::replace( 'trc_PostTypes' )->method( 'is_restricted_post_type', true )->get();
-		$sut->set_post_types( $post_types );
-
-		$user = Test::replace( 'trc_UserInterface' )->method( 'can_access_query', false )->get();
-		$sut->set_user( $user );
-
-		Test::assertTrue( $sut->should_restrict_query( $this->get_mock_query() ) );
-	}
-
-	/**
-	 * @test
 	 * it should add a restricting tax query if one restricting taxonomy is present
 	 */
 	public function it_should_add_a_restricting_tax_query_if_one_restricting_taxonomy_is_present() {

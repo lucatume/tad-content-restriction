@@ -99,5 +99,4 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		Test::assertCount( 1, $posts );
 		Test::assertEquals( $accessible_id, $posts[0]->ID );
 	}
-
 }

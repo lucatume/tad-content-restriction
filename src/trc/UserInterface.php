@@ -11,13 +11,6 @@ interface trc_UserInterface {
 	public function set_user( WP_User $user );
 
 	/**
-	 * @param WP_Query $query
-	 *
-	 * @return mixed|void
-	 */
-	public function can_access_query( WP_Query $query );
-
-	/**
 	 * @param int|WP_Post|null $post A post ID, a post object or null to use the current globally defined post.
 	 *
 	 * @return bool|WP_Error True if the user can access the post, false if the user cannot access the post, a WP_Error

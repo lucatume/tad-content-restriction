@@ -34,16 +34,6 @@ class trc_User implements trc_UserInterface{
 	}
 
 	/**
-	 * @param WP_Query $query
-	 *
-	 * @return mixed|void
-	 */
-	public function can_access_query( WP_Query $query ) {
-
-		return apply_filters( 'trc_user_can_access_query', true, $query, $this->wp_user );
-	}
-
-	/**
 	 * @param int|WP_Post|null $post A post ID, a post object or null to use the current globally defined post.
 	 *
 	 * @return bool|WP_Error True if the user can access the post, false if the user cannot access the post, a WP_Error

@@ -33,7 +33,7 @@ class trc_TaxonomiesTest extends \PHPUnit_Framework_TestCase {
 		$sut = trc_Taxonomies::instance();
 
 		$sut->add( 'foo' );
-		Test::replace( 'get_taxonomies', [ 'foo' ] );
+		Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
 
 		Test::assertEquals( [ 'foo' ], $sut->get_restricting_taxonomies( 'post' ) );
 	}
@@ -45,7 +45,7 @@ class trc_TaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_query_the_taxonomies_for_the_object_types() {
 		$sut = trc_Taxonomies::instance();
 
-		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' ] );
+		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
 
 		$sut->get_restricting_taxonomies( 'post' );
 
@@ -59,7 +59,7 @@ class trc_TaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_query_the_taxonomies_for_multiple_object_types() {
 		$sut = trc_Taxonomies::instance();
 
-		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' ] );
+		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
 
 		$sut->get_restricting_taxonomies( [ 'post', 'page' ] );
 
@@ -75,7 +75,7 @@ class trc_TaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'get_taxonomies', [ ] );
 
-		$taxonomies = $sut->get_restricting_taxonomies( [ 'post' ] );
+		$taxonomies = $sut->get_restricting_taxonomies( [ 'post' => 23 ] );
 
 		Test::assertEmpty( $taxonomies );
 	}
@@ -87,7 +87,7 @@ class trc_TaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_filtering_the_taxonomies_adding_them() {
 		$sut = trc_Taxonomies::instance();
 
-		Test::replace( 'get_taxonomies', [ 'tax_a', 'tax_b' ] );
+		Test::replace( 'get_taxonomies', [ 'tax_a' => 23, 'tax_b' => 23 ] );
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
@@ -104,7 +104,7 @@ class trc_TaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_filtering_the_taxonomies_removing_them() {
 		$sut = trc_Taxonomies::instance();
 
-		Test::replace( 'get_taxonomies', [ 'tax_a', 'tax_b', 'tax_c' ] );
+		Test::replace( 'get_taxonomies', [ 'tax_a' => 23, 'tax_b' => 23, 'tax_c' => 23 ] );
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 

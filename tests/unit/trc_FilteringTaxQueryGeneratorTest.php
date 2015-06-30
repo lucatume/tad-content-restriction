@@ -48,7 +48,7 @@ class trc_FilteringTaxQueryGeneratorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_FilteringTaxQueryGenerator();
 
 		$exp  = [ 'taxonomy' => 'foo', 'field' => 'slug', 'terms' => [ ], 'operator' => 'IN' ];
-		$user = Test::replace( 'trc_UserInterface' )->method( 'get_content_access_slugs', [ ] )->get();
+		$user = Test::replace( 'trc_UserInterface' )->method( 'get_user_slugs_for', [ ] )->get();
 
 		$sut->set_user( $user );
 
@@ -64,7 +64,7 @@ class trc_FilteringTaxQueryGeneratorTest extends \PHPUnit_Framework_TestCase {
 
 		$user_terms = [ 'term_1', 'term_2' ];
 		$exp        = [ 'taxonomy' => 'foo', 'field' => 'slug', 'terms' => $user_terms, 'operator' => 'IN' ];
-		$user       = Test::replace( 'trc_UserInterface' )->method( 'get_content_access_slugs', $user_terms )->get();
+		$user       = Test::replace( 'trc_UserInterface' )->method( 'get_user_slugs_for', $user_terms )->get();
 
 		$sut->set_user( $user );
 
