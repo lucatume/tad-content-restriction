@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_FilteringTaxQueryGenerator implements trc_FilteringTaxQueryGeneratorInterface {
+class trc_Core_FilteringTaxQueryGenerator implements trc_Core_FilteringTaxQueryGeneratorInterface {
 
 	/**
 	 * @var string
@@ -9,7 +9,7 @@ class trc_FilteringTaxQueryGenerator implements trc_FilteringTaxQueryGeneratorIn
 	protected $restricting_tax_name;
 
 	/**
-	 * @var trc_UserInterface
+	 * @var trc_Core_UserInterface
 	 */
 	protected $user;
 
@@ -39,15 +39,15 @@ class trc_FilteringTaxQueryGenerator implements trc_FilteringTaxQueryGeneratorIn
 	public static function instance() {
 		$instance = new self;
 
-		$instance->user = trc_Plugin::instance()->user;
+		$instance->user = trc_Core_Plugin::instance()->user;
 
 		return $instance;
 	}
 
 	/**
-	 * @param trc_UserInterface $user
+	 * @param trc_Core_UserInterface $user
 	 */
-	public function set_user( trc_UserInterface $user ) {
+	public function set_user( trc_Core_UserInterface $user ) {
 		$this->user = $user;
 	}
 }

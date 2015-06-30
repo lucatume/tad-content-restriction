@@ -1,43 +1,43 @@
 <?php
 
 
-class trc_TemplateRedirector {
+class trc_Core_TemplateRedirector implements trc_Core_TemplateRedirectorInterface {
 
 	/**
-	 * @var trc_PostTypesInterface
+	 * @var trc_Core_PostTypesInterface
 	 */
 	protected $post_types;
 
 	/**
-	 * @var trc_TemplatesInterface
+	 * @var trc_Core_TemplatesInterface
 	 */
 	protected $templates;
 
 	/**
-	 * @var trc_UserInterface
+	 * @var trc_Core_UserInterface
 	 */
 	protected $user;
 
 	/**
-	 * @var trc_RestrictingTaxonomiesInterface
+	 * @var trc_Core_RestrictingTaxonomiesInterface
 	 */
 	protected $taxonomies;
 
 	public static function instance() {
 		$instance = new self;
 
-		$instance->post_types = trc_PostTypes::instance();
-		$instance->user       = trc_User::instance();
-		$instance->taxonomies = trc_Taxonomies::instance();
-		$instance->templates  = trc_Templates::instance();
+		$instance->post_types = trc_Core_PostTypes::instance();
+		$instance->user       = trc_Core_User::instance();
+		$instance->taxonomies = trc_Core_RestrictingTaxonomies::instance();
+		$instance->templates  = trc_Core_Templates::instance();
 
 		return $instance;
 	}
 
 	/**
-	 * @param trc_PostTypesInterface $post_types
+	 * @param trc_Core_PostTypesInterface $post_types
 	 */
-	public function set_post_types( trc_PostTypesInterface $post_types ) {
+	public function set_post_types( trc_Core_PostTypesInterface $post_types ) {
 		$this->post_types = $post_types;
 	}
 
@@ -69,23 +69,23 @@ class trc_TemplateRedirector {
 	}
 
 	/**
-	 * @param trc_UserInterface $user
+	 * @param trc_Core_UserInterface $user
 	 */
-	public function set_user( trc_UserInterface $user ) {
+	public function set_user( trc_Core_UserInterface $user ) {
 		$this->user = $user;
 	}
 
 	/**
-	 * @param trc_TemplatesInterface $templates
+	 * @param trc_Core_TemplatesInterface $templates
 	 */
-	public function set_templates( trc_TemplatesInterface $templates ) {
+	public function set_templates( trc_Core_TemplatesInterface $templates ) {
 		$this->templates = $templates;
 	}
 
 	/**
-	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 * @param trc_Core_RestrictingTaxonomiesInterface $taxonomies
 	 */
-	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
+	public function set_taxonomies( trc_Core_RestrictingTaxonomiesInterface $taxonomies ) {
 		$this->taxonomies = $taxonomies;
 	}
 }

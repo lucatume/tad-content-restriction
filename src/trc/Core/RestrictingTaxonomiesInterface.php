@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_RestrictingTaxonomiesInterface {
+interface trc_Core_RestrictingTaxonomiesInterface {
 
 	public static function instance();
 

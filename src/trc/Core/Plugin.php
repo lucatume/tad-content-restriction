@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Plugin {
+class trc_Core_Plugin {
 
 	/**
 	 * @var self
@@ -29,32 +29,32 @@ class trc_Plugin {
 	public $user_content_access_slug_meta_key = '_trc_content_access_slug';
 
 	/**
-	 * @var trc_RestrictingTaxonomiesInterface
+	 * @var trc_Core_RestrictingTaxonomiesInterface
 	 */
 	public $taxonomies;
 
 	/**
-	 * @var trc_UserInterface
+	 * @var trc_Core_UserInterface
 	 */
 	public $user;
 
 	/**
-	 * @var trc_QueryVars
+	 * @var trc_Core_QueryVars
 	 */
 	public $query_vars;
 
 	/**
-	 * @var trc_AdminPage
+	 * @var trc_UI_AdminPage
 	 */
 	public $admin_page;
 
 	/**
-	 * @var trc_TemplateRedirector
+	 * @var trc_Core_TemplateRedirectorInterface
 	 */
 	public $template_redirector;
 
 	/**
-	 * @var trc_QueryRestrictor
+	 * @var trc_Core_QueryRestrictorInterface
 	 */
 	public $query_restrictor;
 
@@ -62,12 +62,12 @@ class trc_Plugin {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
 
-			self::$instance->taxonomies          = trc_Taxonomies::instance();
-			self::$instance->user                = trc_User::instance();
-			self::$instance->query_vars          = trc_QueryVars::instance()->init();
-			self::$instance->admin_page          = trc_AdminPage::instance()->init();
-			self::$instance->template_redirector = trc_TemplateRedirector::instance()->init();
-			self::$instance->query_restrictor    = trc_QueryRestrictor::instance()->init();
+			self::$instance->taxonomies          = trc_Core_RestrictingTaxonomies::instance();
+			self::$instance->user                = trc_Core_User::instance();
+			self::$instance->query_vars          = trc_Core_QueryVars::instance()->init();
+			self::$instance->admin_page          = trc_UI_AdminPage::instance()->init();
+			self::$instance->template_redirector = trc_Core_TemplateRedirector::instance()->init();
+			self::$instance->query_restrictor    = trc_Core_QueryRestrictor::instance()->init();
 		}
 
 		return self::$instance;

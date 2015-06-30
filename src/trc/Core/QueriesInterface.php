@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_QueriesInterface {
+interface trc_Core_QueriesInterface {
 
 	public static function instance();
 

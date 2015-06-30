@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_TemplatesInterface {
+interface trc_Core_TemplatesInterface {
 
 	public static function instance();
 

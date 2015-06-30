@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_PostTypesInterface {
+interface trc_Core_PostTypesInterface {
 
 	public static function instance();
 

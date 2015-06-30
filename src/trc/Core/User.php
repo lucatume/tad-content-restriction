@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_User implements trc_UserInterface{
+class trc_Core_User implements trc_Core_UserInterface{
 
 	/**
 	 * @var WP_User
@@ -9,12 +9,12 @@ class trc_User implements trc_UserInterface{
 	protected $wp_user;
 
 	/**
-	 * @var trc_UserSlugProviderInterface[]
+	 * @var trc_Public_UserSlugProviderInterface[]
 	 */
 	protected $user_slug_providers = array();
 
 	/**
-	 * @var trc_RestrictingTaxonomiesInterface
+	 * @var trc_Core_RestrictingTaxonomiesInterface
 	 */
 	protected $taxonomies;
 
@@ -75,7 +75,7 @@ class trc_User implements trc_UserInterface{
 			$can_access *= count( array_intersect( $slugs, $user_slugs ) );
 		}
 
-		return apply_filters( 'trc_user_can_access_post', (bool) $can_access, $post, $this->wp_user );
+		return apply_filters( 'trc_Core_user_can_access_post', (bool) $can_access, $post, $this->wp_user );
 	}
 
 	/**
@@ -94,7 +94,7 @@ class trc_User implements trc_UserInterface{
 	}
 
 	/**
-	 * @return trc_UserSlugProviderInterface[]
+	 * @return trc_Public_UserSlugProviderInterface[]
 	 */
 	public function get_user_slug_providers() {
 		return $this->user_slug_providers;
@@ -102,11 +102,11 @@ class trc_User implements trc_UserInterface{
 
 	/**
 	 * @param string                        $taxonomy
-	 * @param trc_UserSlugProviderInterface $user_slug_provider
+	 * @param trc_Public_UserSlugProviderInterface $user_slug_provider
 	 *
 	 * @return $this
 	 */
-	public function add_user_slug_provider( $taxonomy, trc_UserSlugProviderInterface $user_slug_provider ) {
+	public function add_user_slug_provider( $taxonomy, trc_Public_UserSlugProviderInterface $user_slug_provider ) {
 		$this->user_slug_providers[ $taxonomy ] = $user_slug_provider;
 
 		return $this;
@@ -124,9 +124,9 @@ class trc_User implements trc_UserInterface{
 	}
 
 	/**
-	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 * @param trc_Core_RestrictingTaxonomiesInterface $taxonomies
 	 */
-	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
+	public function set_taxonomies( trc_Core_RestrictingTaxonomiesInterface $taxonomies ) {
 		$this->taxonomies = $taxonomies;
 	}
 

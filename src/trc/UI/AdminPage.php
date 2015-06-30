@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_AdminPage {
+class trc_UI_AdminPage {
 
 	public static function instance() {
 		return new self;

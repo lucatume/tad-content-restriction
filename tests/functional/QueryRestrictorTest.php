@@ -17,7 +17,7 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		$user = Test::replace( 'WP_User' )->get();
 		Test::replace( 'get_user_by', $user );
 
-		tests_add_filter( 'pre_get_posts', [ trc_QueryRestrictor::instance(), 'maybe_restrict_query' ] );
+		tests_add_filter( 'pre_get_posts', [ trc_Core_QueryRestrictor::instance(), 'maybe_restrict_query' ] );
 	}
 
 	public function tearDown() {
@@ -46,11 +46,11 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		wp_set_object_terms( $accessible_id, 'term_1', $tax_name );
 		wp_set_object_terms( $unaccessible_id, 'term_2', $tax_name );
 
-		trc_Plugin::instance()->taxonomies->add( $tax_name );
+		trc_Core_Plugin::instance()->taxonomies->add( $tax_name );
 
-		$user_slug_provider = Test::replace( 'trc_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_1' ] )
+		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_1' ] )
 		                          ->get();
-		trc_Plugin::instance()->user->add_user_slug_provider( $tax_name, $user_slug_provider );
+		trc_Core_Plugin::instance()->user->add_user_slug_provider( $tax_name, $user_slug_provider );
 
 		$posts = ( new WP_Query( [ 'post_type' => 'post' ] ) )->get_posts();
 
@@ -83,16 +83,16 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		wp_set_object_terms( $unaccessible_id, 'term_21', 'tax_1' );
 		wp_set_object_terms( $unaccessible_id, 'term_22', 'tax_2' );
 
-		trc_Plugin::instance()->taxonomies->add( 'tax_1' );
-		trc_Plugin::instance()->taxonomies->add( 'tax_2' );
+		trc_Core_Plugin::instance()->taxonomies->add( 'tax_1' );
+		trc_Core_Plugin::instance()->taxonomies->add( 'tax_2' );
 
-		$user_slug_provider = Test::replace( 'trc_UserSlugProviderInterface' )->method( 'get_user_slugs', 'term_11' )
+		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', 'term_11' )
 		                          ->get();
-		trc_Plugin::instance()->user->add_user_slug_provider( 'tax_1', $user_slug_provider );
+		trc_Core_Plugin::instance()->user->add_user_slug_provider( 'tax_1', $user_slug_provider );
 
-		$user_slug_provider = Test::replace( 'trc_UserSlugProviderInterface' )->method( 'get_user_slugs', 'term_12' )
+		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', 'term_12' )
 		                          ->get();
-		trc_Plugin::instance()->user->add_user_slug_provider( 'tax_2', $user_slug_provider );
+		trc_Core_Plugin::instance()->user->add_user_slug_provider( 'tax_2', $user_slug_provider );
 
 		$posts = ( new WP_Query( [ 'post_type' => 'post' ] ) )->get_posts();
 

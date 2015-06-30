@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_QueryVars {
+class trc_Core_QueryVars {
 
 	public static function instance() {
 		return new self;

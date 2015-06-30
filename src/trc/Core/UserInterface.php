@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_UserInterface {
+interface trc_Core_UserInterface {
 
 	public static function instance();
 
@@ -26,17 +26,17 @@ interface trc_UserInterface {
 	public function get_user_slugs_for( $tax );
 
 	/**
-	 * @return trc_UserSlugProviderInterface[]
+	 * @return trc_Public_UserSlugProviderInterface[]
 	 */
 	public function get_user_slug_providers();
 
 	/**
 	 * @param string                        $taxonomy
-	 * @param trc_UserSlugProviderInterface $user_slug_provider
+	 * @param trc_Public_UserSlugProviderInterface $user_slug_provider
 	 *
 	 * @return $this
 	 */
-	public function add_user_slug_provider( $taxonomy, trc_UserSlugProviderInterface $user_slug_provider );
+	public function add_user_slug_provider( $taxonomy, trc_Public_UserSlugProviderInterface $user_slug_provider );
 
 	/**
 	 * @param $taxonomy
@@ -46,7 +46,7 @@ interface trc_UserInterface {
 	public function remove_user_slug_provider( $taxonomy );
 
 	/**
-	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 * @param trc_Core_RestrictingTaxonomiesInterface $taxonomies
 	 */
-	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies );
+	public function set_taxonomies( trc_Core_RestrictingTaxonomiesInterface $taxonomies );
 }

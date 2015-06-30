@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_UserSlugProviderInterface {
+interface trc_Public_UserSlugProviderInterface {
 
 	/**
 	 * @return string The name of the taxonomy the class will provide user slugs for.

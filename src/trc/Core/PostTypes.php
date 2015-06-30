@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_PostTypes implements trc_PostTypesInterface {
+class trc_Core_PostTypes implements trc_Core_PostTypesInterface {
 
 	public static function instance() {
 		return new self;

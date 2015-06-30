@@ -1,35 +1,35 @@
 <?php
 
 
-class trc_QueryRestrictor {
+class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 
 	/**
-	 * @var trc_PostTypesInterface
+	 * @var trc_Core_PostTypesInterface
 	 */
 	protected $post_types;
 
 	/**
-	 * @var trc_RestrictingTaxonomiesInterface
+	 * @var trc_Core_RestrictingTaxonomiesInterface
 	 */
 	protected $taxonomies;
 
 	/**
-	 * @var trc_FilteringTaxQueryGeneratorInterface
+	 * @var trc_Core_FilteringTaxQueryGeneratorInterface
 	 */
 	protected $filtering_taxonomy;
 
 	/**
-	 * @var trc_QueriesInterface
+	 * @var trc_Core_QueriesInterface
 	 */
 	protected $queries;
 
 	public static function instance() {
 		$instance = new self;
 
-		$instance->taxonomies         = trc_Plugin::instance()->taxonomies;
-		$instance->post_types         = trc_PostTypes::instance();
-		$instance->filtering_taxonomy = trc_FilteringTaxQueryGenerator::instance();
-		$instance->queries            = trc_Queries::instance();
+		$instance->taxonomies         = trc_Core_Plugin::instance()->taxonomies;
+		$instance->post_types         = trc_Core_PostTypes::instance();
+		$instance->filtering_taxonomy = trc_Core_FilteringTaxQueryGenerator::instance();
+		$instance->queries            = trc_Core_Queries::instance();
 
 		return $instance;
 	}
@@ -89,30 +89,30 @@ class trc_QueryRestrictor {
 	}
 
 	/**
-	 * @param trc_PostTypesInterface $post_types
+	 * @param trc_Core_PostTypesInterface $post_types
 	 */
-	public function set_post_types( trc_PostTypesInterface $post_types ) {
+	public function set_post_types( trc_Core_PostTypesInterface $post_types ) {
 		$this->post_types = $post_types;
 	}
 
 	/**
-	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 * @param trc_Core_RestrictingTaxonomiesInterface $taxonomies
 	 */
-	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
+	public function set_taxonomies( trc_Core_RestrictingTaxonomiesInterface $taxonomies ) {
 		$this->taxonomies = $taxonomies;
 	}
 
 	/**
-	 * @param trc_FilteringTaxQueryGeneratorInterface $filtering_taxonomy
+	 * @param trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy
 	 */
-	public function set_filtering_taxonomy( trc_FilteringTaxQueryGeneratorInterface $filtering_taxonomy ) {
+	public function set_filtering_taxonomy( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy ) {
 		$this->filtering_taxonomy = $filtering_taxonomy;
 	}
 
 	/**
-	 * @param trc_QueriesInterface $queries
+	 * @param trc_Core_QueriesInterface $queries
 	 */
-	public function set_queries( trc_QueriesInterface $queries ) {
+	public function set_queries( trc_Core_QueriesInterface $queries ) {
 		$this->queries = $queries;
 	}
 }
