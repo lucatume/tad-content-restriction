@@ -91,7 +91,7 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
-			return $tag == 'trc_Core_restricting_taxonomies' ? [ 'tax_c', 'tax_d' ] : $val;
+			return $tag == 'trc_restricting_taxonomies' ? [ 'tax_c', 'tax_d' ] : $val;
 		} );
 
 		Test::assertEquals( [ 'tax_c', 'tax_d' ], $sut->get_restricting_taxonomies( 'post' ) );
@@ -108,7 +108,7 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
-			return $tag == 'trc_Core_restricting_taxonomies' ? [ 'tax_a' ] : $val;
+			return $tag == 'trc_restricting_taxonomies' ? [ 'tax_a' ] : $val;
 		} );
 
 		Test::assertEquals( [ 'tax_a' ], $sut->get_restricting_taxonomies( 'post' ) );

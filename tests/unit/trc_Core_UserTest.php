@@ -314,7 +314,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		$sut->add_user_slug_provider( 'tax_a', $provider );
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
-			return $tag == 'trc_Core_user_can_access_post' ? true : $val;
+			return $tag == 'trc_user_can_access_post' ? true : $val;
 		} );
 
 		Test::assertTrue( $sut->can_access_post() );
