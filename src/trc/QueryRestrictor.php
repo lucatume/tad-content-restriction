@@ -14,7 +14,7 @@ class trc_QueryRestrictor {
 	protected $taxonomies;
 
 	/**
-	 * @var trc_FilteringTaxonomyInterface
+	 * @var trc_FilteringTaxQueryGeneratorInterface
 	 */
 	protected $filtering_taxonomy;
 
@@ -33,7 +33,7 @@ class trc_QueryRestrictor {
 
 		$instance->post_types         = trc_PostTypes::instance();
 		$instance->taxonomies         = trc_Taxonomies::instance();
-		$instance->filtering_taxonomy = trc_FilteringTaxonomy::instance();
+		$instance->filtering_taxonomy = trc_FilteringTaxQueryGenerator::instance();
 		$instance->queries            = trc_Queries::instance();
 
 		return $instance;
@@ -119,9 +119,9 @@ class trc_QueryRestrictor {
 	}
 
 	/**
-	 * @param trc_FilteringTaxonomyInterface $filtering_taxonomy
+	 * @param trc_FilteringTaxQueryGeneratorInterface $filtering_taxonomy
 	 */
-	public function set_filtering_taxonomy( trc_FilteringTaxonomyInterface $filtering_taxonomy ) {
+	public function set_filtering_taxonomy( trc_FilteringTaxQueryGeneratorInterface $filtering_taxonomy ) {
 		$this->filtering_taxonomy = $filtering_taxonomy;
 	}
 

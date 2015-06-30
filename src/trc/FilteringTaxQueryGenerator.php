@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_FilteringTaxonomy implements trc_FilteringTaxonomyInterface {
+class trc_FilteringTaxQueryGenerator implements trc_FilteringTaxQueryGeneratorInterface {
 
 	/**
 	 * @var string

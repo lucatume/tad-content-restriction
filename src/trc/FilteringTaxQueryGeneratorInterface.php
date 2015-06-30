@@ -1,7 +1,7 @@
 <?php
 
 
-interface trc_FilteringTaxonomyInterface {
+interface trc_FilteringTaxQueryGeneratorInterface {
 
 	public function get_array_for( $restricting_tax_name );
 
