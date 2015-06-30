@@ -10,7 +10,7 @@ class trc_Core_Templates implements trc_Core_TemplatesInterface {
 	public function get_redirection_template() {
 		$list = array( '403.php', '404.php', 'index.php' );
 
-		$list = apply_filters( 'trc_Core_template_list', $list );
+		$list = apply_filters( 'trc_template_list', $list );
 
 		return locate_template( $list );
 	}
@@ -22,9 +22,9 @@ class trc_Core_Templates implements trc_Core_TemplatesInterface {
 	 */
 	public function should_restrict_template( $template ) {
 		$unrestricted_templates   = $this->get_unrestricted_templates();
-		$should_restrict_template = in_array( $template, $unrestricted_templates );
+		$should_restrict_template = ! ( is_singular() || in_array( $template, $unrestricted_templates ) );
 
-		return apply_filters( 'trc_Core_should_restrict_template', $should_restrict_template, $template );
+		return apply_filters( 'trc_should_restrict_template', $should_restrict_template, $template );
 	}
 
 	public function get_unrestricted_templates() {
@@ -39,7 +39,7 @@ class trc_Core_Templates implements trc_Core_TemplatesInterface {
 			'front-page.php'
 		);
 
-		return apply_filters( 'trc_Core_unrestricted_templates', $unrestricted );
+		return apply_filters( 'trc_unrestricted_templates', $unrestricted );
 	}
 
 }

@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Core_User implements trc_Core_UserInterface{
+class trc_Core_User implements trc_Core_UserInterface {
 
 	/**
 	 * @var WP_User
@@ -21,7 +21,8 @@ class trc_Core_User implements trc_Core_UserInterface{
 	public static function instance() {
 		$instance = new self;
 
-		$instance->set_user( get_user_by( 'id', get_current_user_id() ) );
+		$instance->user       = get_user_by( 'id', get_current_user_id() );
+		$instance->taxonomies = trc_Core_Plugin::instance()->taxonomies;
 
 		return $instance;
 	}
@@ -59,7 +60,7 @@ class trc_Core_User implements trc_Core_UserInterface{
 
 		$can_access = 1;
 		foreach ( $taxonomies as $tax ) {
-			$slugs = wp_get_object_terms( $post->ID, $tax, array( 'fields' => 'slug' ) );
+			$slugs = wp_get_object_terms( $post->ID, $tax, array( 'fields' => 'slugs' ) );
 			if ( empty( $slugs ) ) {
 				$can_access *= 1;
 				continue;
@@ -75,7 +76,7 @@ class trc_Core_User implements trc_Core_UserInterface{
 			$can_access *= count( array_intersect( $slugs, $user_slugs ) );
 		}
 
-		return apply_filters( 'trc_Core_user_can_access_post', (bool) $can_access, $post, $this->wp_user );
+		return apply_filters( 'trc_user_can_access_post', (bool) $can_access, $post, $this->wp_user );
 	}
 
 	/**
@@ -101,7 +102,7 @@ class trc_Core_User implements trc_Core_UserInterface{
 	}
 
 	/**
-	 * @param string                        $taxonomy
+	 * @param string                               $taxonomy
 	 * @param trc_Public_UserSlugProviderInterface $user_slug_provider
 	 *
 	 * @return $this

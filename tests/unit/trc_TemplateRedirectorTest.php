@@ -3,7 +3,7 @@
 
 use tad\FunctionMocker\FunctionMocker as Test;
 
-class trc_Core_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
+class trc_Core_TemplateRedirectorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
@@ -17,7 +17,7 @@ class trc_Core_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * it should not redirect if there are no restricting taxonomies
 	 */
-	public function it_should_not_restrict_the_query_if_there_are_no_restricting_taxonomies() {
+	public function it_should_not_redirect_if_there_are_no_restricting_taxonomies() {
 		$sut = new trc_Core_TemplateRedirector();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ ] )->get();
