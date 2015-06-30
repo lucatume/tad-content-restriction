@@ -48,7 +48,7 @@ class trc_TemplateRedirector {
 	}
 
 	public function maybe_redirect( $template ) {
-		if ( empty( $this->taxonomies->get_restricting_taxonomies() ) ) {
+		if ( empty( $this->taxonomies->get_restricting_taxonomies( get_post_type() ) ) ) {
 			return $template;
 		}
 

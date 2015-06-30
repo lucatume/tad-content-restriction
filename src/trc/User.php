@@ -60,7 +60,7 @@ class trc_User implements trc_UserInterface {
 			return new WP_Error( 'invalid_post', 'The post parameter is not a valid post ID, post object or there is no globally defined post.' );
 		}
 
-		$taxonomies = $this->taxonomies->get_restricting_taxonomies();
+		$taxonomies = $this->taxonomies->get_restricting_taxonomies( $post->post_type );
 
 		if ( empty( $taxonomies ) ) {
 			return true;

@@ -63,7 +63,7 @@ class trc_QueryRestrictor {
 	 * @return bool
 	 */
 	public function should_restrict_query( WP_Query &$query ) {
-		if ( empty( $this->taxonomies->get_restricting_taxonomies() ) ) {
+		if ( empty( $this->taxonomies->get_restricting_taxonomies( $query->get( 'post_type' ) ) ) ) {
 			return false;
 		}
 
@@ -89,7 +89,7 @@ class trc_QueryRestrictor {
 	 * @param WP_Query $query
 	 */
 	public function restrict_query( WP_Query &$query ) {
-		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies();
+		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies( $query->get( 'post_type' ) );
 
 		foreach ( $restricting_taxonomies as $restricting_tax_name ) {
 			$query->tax_query->queries[] = $this->filtering_taxonomy->get_array_for( $restricting_tax_name );
