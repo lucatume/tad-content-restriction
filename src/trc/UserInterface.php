@@ -3,36 +3,57 @@
 
 interface trc_UserInterface {
 
-	/**
-	 * @return trc_UserInterface
-	 */
 	public static function instance();
 
 	/**
 	 * @param WP_User $user
-	 *
-	 * @return trc_UserInterface
 	 */
 	public function set_user( WP_User $user );
 
 	/**
-	 * @param string $taxonomy A restriction taxonomy slug
-	 *
-	 * @return array An array of restriction taxonomy term slugs
-	 */
-	public function get_content_access_slugs( $taxonomy );
-
-	/**
 	 * @param WP_Query $query
 	 *
-	 * @return bool True if the user can access the query, false otherwise
+	 * @return mixed|void
 	 */
 	public function can_access_query( WP_Query $query );
 
 	/**
-	 * @param WP_Post|int $post Either a post object or a post ID
+	 * @param int|WP_Post|null $post A post ID, a post object or null to use the current globally defined post.
 	 *
-	 * @return bool True if the user can access the post, false otherwise
+	 * @return bool|WP_Error True if the user can access the post, false if the user cannot access the post, a WP_Error
+	 *                       if the post parameter is not valid.
 	 */
 	public function can_access_post( $post = null );
+
+	/**
+	 * @param string $tax
+	 *
+	 * @return array|string[]
+	 */
+	public function get_user_slugs_for( $tax );
+
+	/**
+	 * @return trc_UserSlugProviderInterface[]
+	 */
+	public function get_user_slug_providers();
+
+	/**
+	 * @param string                        $taxonomy
+	 * @param trc_UserSlugProviderInterface $user_slug_provider
+	 *
+	 * @return $this
+	 */
+	public function add_user_slug_provider( $taxonomy, trc_UserSlugProviderInterface $user_slug_provider );
+
+	/**
+	 * @param $taxonomy
+	 *
+	 * @return $this
+	 */
+	public function remove_user_slug_provider( $taxonomy );
+
+	/**
+	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 */
+	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies );
 }

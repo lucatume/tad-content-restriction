@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_User implements trc_UserInterface {
+class trc_User implements trc_UserInterface{
 
 	/**
 	 * @var WP_User
@@ -26,24 +26,21 @@ class trc_User implements trc_UserInterface {
 		return $instance;
 	}
 
+	/**
+	 * @param WP_User $user
+	 */
 	public function set_user( WP_User $user ) {
 		$this->wp_user = $user;
 	}
 
-	public function get_content_access_slugs( $taxonomy ) {
-		// @todo use user slug taxonomy provider class here
-		$user_meta_key = trc_Plugin::instance()->user_content_access_slug_meta_key;
-		$slugs         = get_user_meta( get_current_user_id(), $user_meta_key, true );
-
-		$slugs = isset( $slugs[ $taxonomy ] ) ? $slugs[ $taxonomy ] : array();
-
-		return apply_filters( 'trc_user_content_access_slugs', $slugs, get_current_user() );
-	}
-
+	/**
+	 * @param WP_Query $query
+	 *
+	 * @return mixed|void
+	 */
 	public function can_access_query( WP_Query $query ) {
 
 		return apply_filters( 'trc_user_can_access_query', true, $query, $this->wp_user );
-
 	}
 
 	/**
@@ -91,7 +88,12 @@ class trc_User implements trc_UserInterface {
 		return apply_filters( 'trc_user_can_access_post', (bool) $can_access, $post, $this->wp_user );
 	}
 
-	protected function get_user_slugs_for( $tax ) {
+	/**
+	 * @param string $tax
+	 *
+	 * @return array|string[]
+	 */
+	public function get_user_slugs_for( $tax ) {
 		if ( array_key_exists( $tax, $this->user_slug_providers ) ) {
 			$providers = $this->user_slug_providers;
 
@@ -101,22 +103,39 @@ class trc_User implements trc_UserInterface {
 		return array();
 	}
 
+	/**
+	 * @return trc_UserSlugProviderInterface[]
+	 */
 	public function get_user_slug_providers() {
 		return $this->user_slug_providers;
 	}
 
+	/**
+	 * @param string                        $taxonomy
+	 * @param trc_UserSlugProviderInterface $user_slug_provider
+	 *
+	 * @return $this
+	 */
 	public function add_user_slug_provider( $taxonomy, trc_UserSlugProviderInterface $user_slug_provider ) {
 		$this->user_slug_providers[ $taxonomy ] = $user_slug_provider;
 
 		return $this;
 	}
 
+	/**
+	 * @param $taxonomy
+	 *
+	 * @return $this
+	 */
 	public function remove_user_slug_provider( $taxonomy ) {
 		$this->user_slug_providers = array_diff_key( $this->user_slug_providers, array( $taxonomy => 1 ) );
 
 		return $this;
 	}
 
+	/**
+	 * @param trc_RestrictingTaxonomiesInterface $taxonomies
+	 */
 	public function set_taxonomies( trc_RestrictingTaxonomiesInterface $taxonomies ) {
 		$this->taxonomies = $taxonomies;
 	}

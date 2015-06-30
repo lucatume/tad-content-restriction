@@ -146,7 +146,7 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$taxonomies = Test::replace( 'trc_Taxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxQueryGenerator' )->method( 'get_array_for', 'foo' )->get();
+		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxQueryGenerator' )->method( 'get_tax_query_for', 'foo' )->get();
 		$sut->set_filtering_taxonomy( $filtering_taxonomy );
 
 		$query                     = $this->get_mock_query();
@@ -169,7 +169,7 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxQueryGenerator' )->method( 'get_array_for', 'foo' )->get();
+		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxQueryGenerator' )->method( 'get_tax_query_for', 'foo' )->get();
 		$sut->set_filtering_taxonomy( $filtering_taxonomy );
 
 		$query                     = $this->get_mock_query();
@@ -192,7 +192,7 @@ class trc_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxQueryGenerator' )->method( 'get_array_for', 'foo' )->get();
+		$filtering_taxonomy = Test::replace( 'trc_FilteringTaxQueryGenerator' )->method( 'get_tax_query_for', 'foo' )->get();
 		$sut->set_filtering_taxonomy( $filtering_taxonomy );
 
 		$query                     = $this->get_mock_query();
