@@ -114,6 +114,8 @@ class trc_TemplateRestrictorTest extends \PHPUnit_Framework_TestCase {
 
 	protected function setUp() {
 		Test::setUp();
+
+		Test::replace( 'get_post_type', 'whatever' );
 	}
 
 	protected function tearDown() {

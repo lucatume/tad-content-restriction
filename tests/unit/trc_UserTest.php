@@ -62,9 +62,10 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	 * it should allow user to access post if there are no restricting taxonomies defined
 	 */
 	public function it_should_allow_user_to_access_post_if_there_are_no_restricting_taxonomies_defined() {
-		$sut = new trc_User();
-
-		Test::replace( 'get_post', new stdClass() );
+		$sut             = new trc_User();
+		$post            = new stdClass();
+		$post->post_type = 'post';
+		Test::replace( 'get_post', $post );
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )->method( 'get_restricting_taxonomies', [ ] )
 		                  ->get();
 
@@ -80,8 +81,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_the_user_to_access_a_post_that_has_no_terms_assigned_for_a_restriction_taxonomy() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -106,8 +108,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_the_user_to_access_a_post_that_has_not_one_term_assigned_for_each_restricting_taxonomy() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -140,8 +143,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_the_user_to_access_the_post_if_there_are_no_user_slug_providers() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -167,8 +171,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_allow_the_user_to_access_the_post_if_the_slug_provider_returns_an_empty_array_for_the_taxonomy() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -196,8 +201,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_the_user_to_access_the_post_if_the_user_has_at_least_one_access_term() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -219,8 +225,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_the_user_to_access_the_post_if_the_user_has_more_than_one_access_term() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -243,8 +250,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_the_user_access_the_post_if_the_user_has_more_than_one_of_the_required_access_terms() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -267,8 +275,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_allow_the_user_access_to_the_post_if_the_user_has_not_required_terms() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
@@ -317,8 +326,9 @@ class trc_UserTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_filtering_the_user_access_to_post() {
 		$sut = new trc_User();
 
-		$post     = new stdClass();
-		$post->ID = 23;
+		$post            = new stdClass();
+		$post->ID        = 23;
+		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_RestrictingTaxonomiesInterface' )
