@@ -21,8 +21,9 @@ class trc_Core_Templates implements trc_Core_TemplatesInterface {
 	 * @return mixed|void
 	 */
 	public function should_restrict_template( $template ) {
+
 		$unrestricted_templates   = $this->get_unrestricted_templates();
-		$should_restrict_template = ! ( is_singular() || in_array( $template, $unrestricted_templates ) );
+		$should_restrict_template = is_singular() && ! in_array( $template, $unrestricted_templates );
 
 		return apply_filters( 'trc_should_restrict_template', $should_restrict_template, $template );
 	}
