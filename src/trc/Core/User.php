@@ -85,13 +85,15 @@ class trc_Core_User implements trc_Core_UserInterface {
 	 * @return array|string[]
 	 */
 	public function get_user_slugs_for( $tax ) {
+		$slugs = array();
+
 		if ( array_key_exists( $tax, $this->user_slug_providers ) ) {
 			$providers = $this->user_slug_providers;
 
-			return $providers[ $tax ]->get_user_slugs();
+			$slugs = $providers[ $tax ]->get_user_slugs();
 		}
 
-		return array();
+		return apply_filters( 'trc_user_slugs_for', $slugs, $tax, $this );
 	}
 
 	/**

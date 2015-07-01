@@ -66,8 +66,8 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		$post            = new stdClass();
 		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )->method( 'get_restricting_taxonomies', [ ] )
-		                  ->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
+		                  ->method( 'get_restricting_taxonomies', [ ] )->get();
 
 		$sut->set_taxonomies( $taxonomies );
 
@@ -212,7 +212,8 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2' ] );
 
-		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_1' ] )->get();
+		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_1' ] )
+		                ->get();
 		$sut->add_user_slug_provider( 'tax_a', $provider );
 
 		Test::assertTrue( $sut->can_access_post() );
@@ -236,8 +237,10 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1' ] );
 
-		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_1', 'term_2' ] )
-		                ->get();
+		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [
+			'term_1',
+			'term_2'
+		] )->get();
 		$sut->add_user_slug_provider( 'tax_a', $provider );
 
 		Test::assertTrue( $sut->can_access_post() );
@@ -261,8 +264,10 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2', 'term_3' ] );
 
-		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_1', 'term_2' ] )
-		                ->get();
+		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [
+			'term_1',
+			'term_2'
+		] )->get();
 		$sut->add_user_slug_provider( 'tax_a', $provider );
 
 		Test::assertTrue( $sut->can_access_post() );
@@ -286,7 +291,8 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2' ] );
 
-		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_3' ] )->get();
+		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_3' ] )
+		                ->get();
 		$sut->add_user_slug_provider( 'tax_a', $provider );
 
 		Test::assertFalse( $sut->can_access_post() );
@@ -310,7 +316,8 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2' ] );
 
-		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_3' ] )->get();
+		$provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )->method( 'get_user_slugs', [ 'term_3' ] )
+		                ->get();
 		$sut->add_user_slug_provider( 'tax_a', $provider );
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
@@ -318,6 +325,21 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		} );
 
 		Test::assertTrue( $sut->can_access_post() );
+	}
+
+	/**
+	 * @test
+	 * it should allow filtering the user slugs for a restriction taxonomy
+	 */
+	public function it_should_allow_filtering_the_user_slugs_for_a_restriction_taxonomy() {
+		$sut = new trc_Core_User();
+		Test::assertEmpty( $sut->get_user_slugs_for( 'tax_1' ) );
+
+		Test::replace( 'apply_filters', function ( $tag, $val ) {
+			return $tag == 'trc_user_slugs_for' ? [ 'term_1' ] : $val;
+		} );
+
+		Test::assertEquals( [ 'term_1' ], $sut->get_user_slugs_for( 'tax_1' ) );
 	}
 
 	protected function setUp() {
