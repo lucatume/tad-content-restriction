@@ -31,4 +31,13 @@ interface trc_Core_PostTypesInterface {
 	 * @return mixed
 	 */
 	public function remove_restricted_post_type( $post_type );
+
+	/**
+	 * Prunes an array of post types to return only the restricted ones.
+	 *
+	 * @param string|array $post_types
+	 *
+	 * @return array An array containing only the restricted post types among the input ones.
+	 */
+	public function get_restricted_post_types_in( $post_types );
 }

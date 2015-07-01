@@ -16,7 +16,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	/**
 	 * @var trc_Core_FilteringTaxQueryGeneratorInterface
 	 */
-	protected $filtering_taxonomy;
+	protected $filtering_taxonomy_generator;
 
 	/**
 	 * @var trc_Core_QueriesInterface
@@ -26,10 +26,10 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	public static function instance() {
 		$instance = new self;
 
-		$instance->taxonomies         = trc_Core_Plugin::instance()->taxonomies;
-		$instance->post_types         = trc_Core_Plugin::instance()->post_types;
-		$instance->filtering_taxonomy = trc_Core_FilteringTaxQueryGenerator::instance();
-		$instance->queries            = trc_Core_Queries::instance();
+		$instance->taxonomies                   = trc_Core_Plugin::instance()->taxonomies;
+		$instance->post_types                   = trc_Core_Plugin::instance()->post_types;
+		$instance->filtering_taxonomy_generator = trc_Core_FilteringTaxQueryGenerator::instance();
+		$instance->queries                      = trc_Core_Queries::instance();
 
 		return $instance;
 	}
@@ -80,12 +80,16 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 * @param WP_Query $query
 	 */
 	public function restrict_query( WP_Query &$query ) {
-		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies( $query->get( 'post_type' ) );
+		$post_types             = $query->get( 'post_type' );
+		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies( $post_types );
 
-		foreach ( $restricting_taxonomies as $restricting_tax_name ) {
-			$query->tax_query->queries[] = $this->filtering_taxonomy->get_tax_query_for( $restricting_tax_name );
+		$queried_restricted_post_types   = $this->post_types->get_restricted_post_types_in( $post_types );
+		$queried_unrestricted_post_types = array_diff( $post_types, $queried_restricted_post_types );
+		if ( $queried_unrestricted_post_types ) {
+			$this->add_excluded_post_ids_to( $query, $restricting_taxonomies, $queried_restricted_post_types );
+		} else {
+			$this->add_filtering_tax_query_to( $query, $restricting_taxonomies );
 		}
-		$query->query_vars['tax_query'] = $query->tax_query->queries;
 	}
 
 	/**
@@ -105,8 +109,8 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	/**
 	 * @param trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy
 	 */
-	public function set_filtering_taxonomy( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy ) {
-		$this->filtering_taxonomy = $filtering_taxonomy;
+	public function set_filtering_taxonomy_generator( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy ) {
+		$this->filtering_taxonomy_generator = $filtering_taxonomy;
 	}
 
 	/**
@@ -114,5 +118,41 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 */
 	public function set_queries( trc_Core_QueriesInterface $queries ) {
 		$this->queries = $queries;
+	}
+
+	/**
+	 * @param WP_Query $query
+	 * @param          $restricting_taxonomies
+	 */
+	protected function add_filtering_tax_query_to( WP_Query &$query, array $restricting_taxonomies ) {
+		foreach ( $restricting_taxonomies as $restricting_tax_name ) {
+			$query->tax_query->queries[] = $this->filtering_taxonomy_generator->get_tax_query_for( $restricting_tax_name );
+		}
+		$query->query_vars['tax_query'] = $query->tax_query->queries;
+	}
+
+	/**
+	 * @param WP_Query $query
+	 * @param array    $restricting_taxonomies
+	 * @param array    $post_types
+	 */
+	protected function add_excluded_post_ids_to( WP_Query &$query, array $restricting_taxonomies, array $post_types ) {
+		$excluded_query = trc_Core_Query::instance( [
+			'post_type'        => $post_types,
+			'suppress_filters' => true,
+			'nopaging'         => true,
+			'fields'           => 'ids'
+		] );
+
+		$this->add_filtering_tax_query_to( $excluded_query, $restricting_taxonomies );
+
+		$excluded_ids = $excluded_query->get_posts();
+
+		if ( empty( $excluded_ids ) ) {
+			return;
+		}
+
+		$post__not_in = array_unique( array_merge( $query->get( 'post__not_in', array() ), $excluded_ids ) );
+		$query->set( 'post__not_in', $post__not_in );
 	}
 }

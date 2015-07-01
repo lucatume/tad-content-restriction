@@ -19,9 +19,10 @@ class trc_Core_PostTypes implements trc_Core_PostTypesInterface {
 	 * @return bool
 	 */
 	public function is_restricted_post_type( $post_type ) {
-		$restricted = in_array( $post_type, $this->get_restricted_post_types() );
+		$post_types = is_array( $post_type ) ? $post_type : array( $post_type );
+		$restricted = count( array_intersect( $post_types, $this->get_restricted_post_types() ) );
 
-		return apply_filters( 'trc_is_restricted_post_type', $restricted, $post_type );
+		return apply_filters( 'trc_is_restricted_post_type', (bool) $restricted, $post_type );
 	}
 
 	/**
@@ -53,5 +54,18 @@ class trc_Core_PostTypes implements trc_Core_PostTypesInterface {
 		$this->restricted_post_types = array_values( array_diff( $this->restricted_post_types, $post_types ) );
 
 		return $this;
+	}
+
+	/**
+	 * Prunes an array of post types to return only the restricted ones.
+	 *
+	 * @param string|array $post_types
+	 *
+	 * @return array An array containing only the restricted post types among the input ones.
+	 */
+	public function get_restricted_post_types_in( $post_types ) {
+		$post_types = is_array( $post_types ) ? $post_types : array( $post_types );
+
+		return array_values( array_intersect( $this->get_restricted_post_types(), $post_types ) );
 	}
 }

@@ -34,7 +34,7 @@ interface trc_Core_QueryRestrictorInterface {
 	/**
 	 * @param trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy
 	 */
-	public function set_filtering_taxonomy( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy );
+	public function set_filtering_taxonomy_generator( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy );
 
 	/**
 	 * @param trc_Core_QueriesInterface $queries

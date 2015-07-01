@@ -103,4 +103,41 @@ class trc_Core_PostTypesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::assertEquals( [ 'page' ], $sut->get_restricted_post_types() );
 	}
+
+	/**
+	 * @test
+	 * it should mark group of post types as restricted if one is restricted
+	 */
+	public function it_should_mark_group_of_post_types_as_restricted_if_one_is_restricted() {
+		$sut = new trc_Core_PostTypes();
+
+		$sut->add_restricted_post_type( 'post' );
+
+		Test::assertTrue( $sut->is_restricted_post_type( [ 'post', 'page' ] ) );
+	}
+
+	public function postTypes() {
+		return [
+			[ [ 'post', 'page' ], [ 'post' ] ],
+			[ [ 'post' ], [ 'post' ] ],
+			[ [ 'page' ], [ ] ],
+			[ 'post', [ 'post' ] ],
+			[ 'page', [ ] ],
+			[ [ 'page', 'post', 'notice' ], [ 'post', 'notice' ] ],
+			[ [ 'post', 'notice' ], [ 'post', 'notice' ] ],
+		];
+	}
+
+	/**
+	 * @test
+	 * it should allow getting restricted post types in a post type array
+	 * @dataProvider postTypes
+	 */
+	public function it_should_allow_getting_restricted_post_types_in_a_post_type_array( $in, $out ) {
+		$sut = new trc_Core_PostTypes();
+
+		$sut->add_restricted_post_type( [ 'post', 'notice' ] );
+
+		Test::assertEquals( $out, $sut->get_restricted_post_types_in( $in ) );
+	}
 }

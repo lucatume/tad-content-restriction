@@ -27,14 +27,17 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_restrict_the_query_if_there_are_no_restricting_taxonomies() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ ] )
+		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
 	}
 
 	private function get_mock_query() {
-		return Test::replace( 'WP_Query' )->get();
+		return Test::replace( 'WP_Query' )
+		           ->get();
 	}
 
 	/**
@@ -44,10 +47,14 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_restrict_the_query_if_queries_are_not_to_be_restricted() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$queries = Test::replace( 'trc_Core_Queries' )->method( 'should_restrict_queries', false )->get();
+		$queries = Test::replace( 'trc_Core_Queries' )
+		               ->method( 'should_restrict_queries', false )
+		               ->get();
 		$sut->set_queries( $queries );
 
 		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
@@ -60,11 +67,15 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_restrict_the_query_if_the_query_is_not_to_be_restricted() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$queries = Test::replace( 'trc_Core_Queries' )->method( 'should_restrict_queries', true )
-		               ->method( 'should_restrict_query', false )->get();
+		$queries = Test::replace( 'trc_Core_Queries' )
+		               ->method( 'should_restrict_queries', true )
+		               ->method( 'should_restrict_query', false )
+		               ->get();
 		$sut->set_queries( $queries );
 
 		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
@@ -77,14 +88,20 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_restrict_the_query_if_the_post_type_is_not_a_restricted_post_type() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$queries = Test::replace( 'trc_Core_Queries' )->method( 'should_restrict_queries', true )
-		               ->method( 'should_restrict_query', true )->get();
+		$queries = Test::replace( 'trc_Core_Queries' )
+		               ->method( 'should_restrict_queries', true )
+		               ->method( 'should_restrict_query', true )
+		               ->get();
 		$sut->set_queries( $queries );
 
-		$post_types = Test::replace( 'trc_Core_PostTypes' )->method( 'is_restricted_post_type', false )->get();
+		$post_types = Test::replace( 'trc_Core_PostTypes' )
+		                  ->method( 'is_restricted_post_type', false )
+		                  ->get();
 		$sut->set_post_types( $post_types );
 
 		Test::assertFalse( $sut->should_restrict_query( $this->get_mock_query() ) );
@@ -97,19 +114,32 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_add_a_restricting_tax_query_if_one_restricting_taxonomy_is_present() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )->method( 'get_tax_query_for', 'foo' )->get();
-		$sut->set_filtering_taxonomy( $filtering_taxonomy );
+		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
+		                  ->method( 'get_restricted_post_types', [ 'post_type' ] )
+		                  ->method( 'is_restricted_post_type', true )
+		                  ->method( 'get_restricted_post_types_in', [ 'post_type' ] )
+		                  ->get();
+		$sut->set_post_types( $post_types );
 
-		$query                     = $this->get_mock_query();
+		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )
+		                          ->method( 'get_tax_query_for', 'restricting_tax_query' )
+		                          ->get();
+		$sut->set_filtering_taxonomy_generator( $filtering_taxonomy );
+
+		$query                     = Test::replace( 'WP_Query' )
+		                                 ->method( 'get', [ 'post_type' ] )
+		                                 ->get();
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ ];
 
 		$sut->restrict_query( $query );
 
-		Test::assertEquals( array( 'foo' ), $query->tax_query->queries );
+		Test::assertEquals( array( 'restricting_tax_query' ), $query->tax_query->queries );
 	}
 
 	/**
@@ -119,20 +149,32 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_add_a_restricting_tax_query_for_each_restricting_taxonomy() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )->method( 'get_tax_query_for', 'foo' )->get();
-		$sut->set_filtering_taxonomy( $filtering_taxonomy );
+		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
+		                  ->method( 'get_restricted_post_types', [ 'post_type' ] )
+		                  ->method( 'is_restricted_post_type', true )
+		                  ->method( 'get_restricted_post_types_in', [ 'post_type' ] )
+		                  ->get();
+		$sut->set_post_types( $post_types );
 
-		$query                     = $this->get_mock_query();
+		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )
+		                          ->method( 'get_tax_query_for', 'restricting_tax_query' )
+		                          ->get();
+		$sut->set_filtering_taxonomy_generator( $filtering_taxonomy );
+
+		$query                     = Test::replace( 'WP_Query' )
+		                                 ->method( 'get', [ 'post_type' ] )
+		                                 ->get();
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ ];
 
 		$sut->restrict_query( $query );
 
-		Test::assertEquals( array( 'foo', 'foo' ), $query->tax_query->queries );
+		Test::assertEquals( array( 'restricting_tax_query', 'restricting_tax_query' ), $query->tax_query->queries );
 	}
 
 	/**
@@ -142,20 +184,122 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_leave_previous_tax_queries_in_place_when_adding_restricting_tax_queries() {
 		$sut = new trc_Core_QueryRestrictor();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
-		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )->method( 'get_tax_query_for', 'foo' )->get();
-		$sut->set_filtering_taxonomy( $filtering_taxonomy );
+		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
+		                  ->method( 'get_restricted_post_types', [ 'post_type' ] )
+		                  ->method( 'is_restricted_post_type', true )
+		                  ->method( 'get_restricted_post_types_in', [ 'post_type' ] )
+		                  ->get();
+		$sut->set_post_types( $post_types );
 
-		$query                     = $this->get_mock_query();
+		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )
+		                          ->method( 'get_tax_query_for', 'restricting_tax_query' )
+		                          ->get();
+		$sut->set_filtering_taxonomy_generator( $filtering_taxonomy );
+
+		$query                     = Test::replace( 'WP_Query' )
+		                                 ->method( 'get', [ 'post_type' ] )
+		                                 ->get();
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ 'here before' ];
 
 		$sut->restrict_query( $query );
 
-		Test::assertEquals( array( 'here before', 'foo', 'foo' ), $query->tax_query->queries );
+		Test::assertEquals( array(
+			'here before',
+			'restricting_tax_query',
+			'restricting_tax_query'
+		), $query->tax_query->queries );
 	}
 
+	/**
+	 * @test
+	 * it should not add a tax query if restricting a multi post type query where some post types are not restricted
+	 */
+	public function it_should_not_add_a_tax_query_if_restricting_a_multi_post_type_query_where_some_post_types_are_not_restricted() {
+		$sut = new trc_Core_QueryRestrictor();
+
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->get();
+		$sut->set_taxonomies( $taxonomies );
+
+		$filtering_taxonomy_generator = Test::replace( 'trc_Core_FilteringTaxQueryGeneratorInterface' )
+		                                    ->get();
+		$sut->set_filtering_taxonomy_generator( $filtering_taxonomy_generator );
+
+		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
+		                  ->method( 'get_restricted_post_types', [ 'post' ] )
+		                  ->method( 'is_restricted_post_type', true )
+		                  ->method( 'get_restricted_post_types_in', [ 'post' ] )
+		                  ->get();
+		$sut->set_post_types( $post_types );
+
+		$query                     = Test::replace( 'WP_Query' )
+		                                 ->method( 'get', [ 'post', 'page' ] )
+		                                 ->get();
+		$query->tax_query          = new stdClass();
+		$query->tax_query->queries = [ ];
+
+		$trc_query = Test::replace( 'trc_Core_Query' )
+		                 ->method( 'get_posts', [ ] )
+		                 ->get();
+		Test::replace( 'trc_Core_Query::instance', $trc_query );
+		$sut->restrict_query( $query );
+
+		$filtering_taxonomy_generator->wasNotCalled( 'get_tax_query_for' );
+	}
+
+	/**
+	 * @test
+	 * it should add excluded post ids to query when querying for restricted and unrestricted post types
+	 */
+	public function it_should_add_excluded_post_ids_to_query_when_querying_for_restricted_and_unrestricted_post_types() {
+		$sut = new trc_Core_QueryRestrictor();
+
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
+		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->get();
+		$sut->set_taxonomies( $taxonomies );
+
+		$filtering_taxonomy = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )
+		                          ->method( 'get_tax_query_for', 'restricting_tax_query' )
+		                          ->get();
+		$sut->set_filtering_taxonomy_generator( $filtering_taxonomy );
+
+		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
+		                  ->method( 'get_restricted_post_types', [ 'post' ] )
+		                  ->method( 'is_restricted_post_type', true )
+		                  ->method( 'get_restricted_post_types_in', [ 'post' ] )
+		                  ->get();
+		$sut->set_post_types( $post_types );
+
+		$excluded             = [ '1', '2', '3' ];
+		$_query               = new stdClass();
+		$_query->post_type    = [ 'post', 'page' ];
+		$_query->post__not_in = [ ];
+		$query                = Test::replace( 'WP_Query' )
+		                            ->method( 'get_posts', $excluded )
+		                            ->method( 'set', function ( $key, $value ) use ( $_query ) {
+			                            $_query->{$key} = $value;
+		                            } )
+		                            ->method( 'get', function ( $key, $default ) use ( $_query ) {
+			                            return $_query->{$key} ?: $default;
+		                            } )
+		                            ->get();
+		$query->post_types    = [ 'post', 'page' ];
+
+		$trc_query = Test::replace( 'trc_Core_Query' )
+		                 ->method( 'get_posts', $excluded )
+		                 ->get();
+		Test::replace( 'trc_Core_Query::instance', $trc_query );
+
+		$sut->restrict_query( $query );
+
+		Test::assertEquals( $excluded, $_query->post__not_in );
+	}
 }
