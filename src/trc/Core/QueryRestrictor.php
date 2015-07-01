@@ -27,7 +27,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		$instance = new self;
 
 		$instance->taxonomies         = trc_Core_Plugin::instance()->taxonomies;
-		$instance->post_types         = trc_Core_PostTypes::instance();
+		$instance->post_types         = trc_Core_Plugin::instance()->post_types;
 		$instance->filtering_taxonomy = trc_Core_FilteringTaxQueryGenerator::instance();
 		$instance->queries            = trc_Core_Queries::instance();
 

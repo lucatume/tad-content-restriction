@@ -53,12 +53,18 @@ class trc_Core_Plugin {
 	 */
 	public $query_restrictor;
 
+	/**
+	 * @var trc_Core_PostTypesInterface
+	 */
+	public $post_types;
+
 	public static function instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
 
 			self::$instance->taxonomies          = trc_Core_RestrictingTaxonomies::instance();
 			self::$instance->user                = trc_Core_User::instance();
+			self::$instance->post_types          = trc_Core_PostTypes::instance();
 			self::$instance->query_vars          = trc_Core_QueryVars::instance()->init();
 			self::$instance->admin_page          = trc_UI_AdminPage::instance()->init();
 			self::$instance->template_redirector = trc_Core_TemplateRedirector::instance()->init();

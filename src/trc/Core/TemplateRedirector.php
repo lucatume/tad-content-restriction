@@ -28,7 +28,7 @@ class trc_Core_TemplateRedirector implements trc_Core_TemplateRedirectorInterfac
 
 		$instance->user       = trc_Core_Plugin::instance()->user;
 		$instance->taxonomies = trc_Core_Plugin::instance()->taxonomies;
-		$instance->post_types = trc_Core_PostTypes::instance();
+		$instance->post_types = trc_Core_Plugin::instance()->post_types;
 		$instance->templates  = trc_Core_Templates::instance();
 
 		return $instance;
