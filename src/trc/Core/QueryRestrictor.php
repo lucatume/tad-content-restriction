@@ -84,14 +84,18 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		$post_types             = is_array( $post_types ) ? $post_types : array( $post_types );
 		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies_for( $post_types );
 
-		$queried_restricted_post_types   = $this->post_types->get_restricted_post_types_in( $post_types );
-		$queried_unrestricted_post_types = array_diff( $post_types, $queried_restricted_post_types );
-		// analyze query and run accessory queries
-		if ( $queried_unrestricted_post_types ) {
-			$this->add_excluded_post_ids_to( $query, $restricting_taxonomies, $queried_restricted_post_types );
+		$query_manager = trc_Core_QueryManager::instance( $query );
+
+		if ( $query_manager->has_auxiliary_queries() ) {
+			foreach ( $query_manager->get_auxiliary_queries() as $query_var => $auxiliary_sub_queries ) {
+				foreach ( $auxiliary_sub_queries as $auxiliary_sub_query ) {
+					$query->set( $query_var, array_unique( array_merge( $query->get( $query_var, array() ), $auxiliary_sub_query->get_posts() ) ) );
+				}
+			}
 		} else {
 			$this->add_filtering_tax_query_to( $query, $restricting_taxonomies );
 		}
+
 	}
 
 	/**

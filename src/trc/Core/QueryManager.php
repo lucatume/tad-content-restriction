@@ -35,6 +35,21 @@ class trc_Core_QueryManager {
 
 	/**
 	 * @param WP_Query $query
+	 *
+	 * @return trc_Core_QueryManager
+	 */
+	public static function instance( WP_Query $query ) {
+		$instance = new self();
+
+		$instance->post_types             = trc_Core_Plugin::instance()->post_types;
+		$instance->restricting_taxonomies = trc_Core_Plugin::instance()->taxonomies;
+		$instance->set_query( $query );
+
+		return $instance;
+	}
+
+	/**
+	 * @param WP_Query $query
 	 */
 	public function set_query( WP_Query $query ) {
 		$this->original_query    = $this->main_query = $query;
@@ -100,5 +115,12 @@ class trc_Core_QueryManager {
 	 */
 	public function set_filtering_tax_query_generator( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_tax_query_generator ) {
 		$this->filtering_tax_query_generator = $filtering_tax_query_generator;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function has_auxiliary_queries() {
+		return ! empty( $this->auxiliary_queries );
 	}
 }

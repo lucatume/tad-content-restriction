@@ -137,6 +137,8 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ ];
 
+		$this->replace_query_manager( false, [ ] );
+
 		$sut->restrict_query( $query );
 
 		Test::assertEquals( array( 'restricting_tax_query' ), $query->tax_query->queries );
@@ -172,6 +174,8 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ ];
 
+		$this->replace_query_manager( false, [ ] );
+
 		$sut->restrict_query( $query );
 
 		Test::assertEquals( array( 'restricting_tax_query', 'restricting_tax_query' ), $query->tax_query->queries );
@@ -206,6 +210,8 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		                                 ->get();
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ 'here before' ];
+
+		$this->replace_query_manager( false, [ ] );
 
 		$sut->restrict_query( $query );
 
@@ -249,6 +255,9 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		                 ->method( 'get_posts', [ ] )
 		                 ->get();
 		Test::replace( 'trc_Core_FastIDQuery::instance', $trc_query );
+
+		$this->replace_query_manager( true, [ ] );
+
 		$sut->restrict_query( $query );
 
 		$filtering_taxonomy_generator->wasNotCalled( 'get_tax_query_for' );
@@ -298,8 +307,26 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		                 ->get();
 		Test::replace( 'trc_Core_FastIDQuery::instance', $trc_query );
 
+		$this->replace_query_manager( true, [
+			'post__not_in' => [
+				Test::replace( 'WP_Query::get_posts', [ 1, 2, 3 ] )
+			]
+		] );
+
 		$sut->restrict_query( $query );
 
 		Test::assertEquals( $excluded, $_query->post__not_in );
+	}
+
+	/**
+	 * @param $has_auxiliary_queries
+	 * @param $auxiliary_queries
+	 */
+	protected function replace_query_manager( $has_auxiliary_queries, $auxiliary_queries ) {
+		$query_manager = Test::replace( 'trc_Core_QueryManager' )
+		                     ->method( 'has_auxiliary_queries', $has_auxiliary_queries )
+		                     ->method( 'get_auxiliary_queries', $auxiliary_queries )
+		                     ->get();
+		Test::replace( 'trc_Core_QueryManager::instance', $query_manager );
 	}
 }
