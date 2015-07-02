@@ -3,7 +3,7 @@
 
 interface trc_Core_FilteringTaxQueryGeneratorInterface {
 
-	public function get_tax_query_for( $restricting_tax_name );
+	public function get_tax_query_for( $restricting_tax_name, $include = true );
 
 	public static function instance();
 

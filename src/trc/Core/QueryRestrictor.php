@@ -84,7 +84,8 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		$post_types             = is_array( $post_types ) ? $post_types : array( $post_types );
 		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies_for( $post_types );
 
-		$query_manager = trc_Core_QueryManager::instance( $query );
+		$query_manager = trc_Core_QueryManager::instance( $query )
+		                                      ->manage();
 
 		if ( $query_manager->has_auxiliary_queries() ) {
 			foreach ( $query_manager->get_auxiliary_queries() as $query_var => $auxiliary_sub_queries ) {
@@ -158,7 +159,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 			return;
 		}
 
-		$post__in = array_unique( array_merge( $query->get( 'post__in', array() ), $excluded_ids ) );
-		$query->set( 'post__in', $post__in );
+		$post__not_in = array_unique( array_merge( $query->get( 'post__not_in', array() ), $excluded_ids ) );
+		$query->set( 'post__not_in', $post__not_in );
 	}
 }

@@ -290,7 +290,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$excluded             = [ '1', '2', '3' ];
 		$_query               = new stdClass();
 		$_query->post_type    = [ 'post', 'page' ];
-		$_query->post__in = [ ];
+		$_query->post__not_in = [ ];
 		$query                = Test::replace( 'WP_Query' )
 		                            ->method( 'get_posts', $excluded )
 		                            ->method( 'set', function ( $key, $value ) use ( $_query ) {
@@ -308,14 +308,14 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'trc_Core_FastIDQuery::instance', $trc_query );
 
 		$this->replace_query_manager( true, [
-			'post__in' => [
+			'post__not_in' => [
 				Test::replace( 'WP_Query::get_posts', [ 1, 2, 3 ] )
 			]
 		] );
 
 		$sut->restrict_query( $query );
 
-		Test::assertEquals( $excluded, $_query->post__in );
+		Test::assertEquals( $excluded, $_query->post__not_in );
 	}
 
 	/**

@@ -36,7 +36,8 @@ class trc_Core_QueryManagerTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryManager();
 		$sut->set_post_types( $post_types );
 
-		$sut->set_query( $query );
+		$sut->set_query( $query )
+		    ->manage();
 
 		Test::assertEquals( $query, $sut->get_main_query() );
 	}
@@ -62,7 +63,8 @@ class trc_Core_QueryManagerTest extends \PHPUnit_Framework_TestCase {
 		$sut->set_post_types( $post_types );
 		$sut->set_restricting_taxonomies( $taxonomies );
 
-		$sut->set_query( $query );
+		$sut->set_query( $query )
+		    ->manage();
 
 		Test::assertEquals( $query, $sut->get_main_query() );
 	}
@@ -97,7 +99,8 @@ class trc_Core_QueryManagerTest extends \PHPUnit_Framework_TestCase {
 		$sut->set_restricting_taxonomies( $taxonomies );
 		$sut->set_filtering_tax_query_generator( $filtering_tax_query_generator );
 
-		$sut->set_query( $query );
+		$sut->set_query( $query )
+		    ->manage();
 
 		$query->wasCalledWithOnce( [ 'post_type', [ 'page' ] ], 'set' );
 	}
@@ -131,9 +134,10 @@ class trc_Core_QueryManagerTest extends \PHPUnit_Framework_TestCase {
 		$sut->set_restricting_taxonomies( $taxonomies );
 		$sut->set_filtering_tax_query_generator( $filtering_tax_query_generator );
 
-		$sut->set_query( $query );
+		$sut->set_query( $query )
+		    ->manage();
 
 		Test::assertCount( 1, $sut->get_auxiliary_queries() );
-		Test::assertCount( 1, $sut->get_auxiliary_queries( 'post__in' ) );
+		Test::assertCount( 1, $sut->get_auxiliary_queries( 'post__not_in' ) );
 	}
 }

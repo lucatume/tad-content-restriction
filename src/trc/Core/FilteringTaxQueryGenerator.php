@@ -14,12 +14,14 @@ class trc_Core_FilteringTaxQueryGenerator implements trc_Core_FilteringTaxQueryG
 	protected $user;
 
 	/**
-	 * @param $restricting_tax_name
+	 * @param      $restricting_tax_name
+	 *
+	 * @param bool $include Whether the `IN` or the `NOT IN` operators should be used.
 	 *
 	 * @return array|WP_Error Either a tax query array or a WP_Error if the user is not set or the taxonomy is not a
 	 *                        string.
 	 */
-	public function get_tax_query_for( $restricting_tax_name ) {
+	public function get_tax_query_for( $restricting_tax_name, $include = true ) {
 		if ( empty( $this->user ) ) {
 			return new WP_Error( 'user_not_set', 'User is not set' );
 		}
@@ -32,7 +34,7 @@ class trc_Core_FilteringTaxQueryGenerator implements trc_Core_FilteringTaxQueryG
 			'taxonomy' => $restricting_tax_name,
 			'field'    => 'slug',
 			'terms'    => $this->user->get_user_slugs_for( $restricting_tax_name ),
-			'operator' => 'IN'
+			'operator' => $include ? 'IN' : 'NOT IN'
 		);
 	}
 
