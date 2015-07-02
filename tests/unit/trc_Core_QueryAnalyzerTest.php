@@ -134,6 +134,6 @@ class trc_Core_QueryManagerTest extends \PHPUnit_Framework_TestCase {
 		$sut->set_query( $query );
 
 		Test::assertCount( 1, $sut->get_auxiliary_queries() );
-		Test::assertCount( 1, $sut->get_auxiliary_queries( 'post__not_in' ) );
+		Test::assertCount( 1, $sut->get_auxiliary_queries( 'post__in' ) );
 	}
 }

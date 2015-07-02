@@ -68,7 +68,7 @@ class trc_Core_QueryManager {
 			$this->main_query->set( 'post_type', $queried_unrestricted_post_types );
 			$restricting_taxonomies = $this->restricting_taxonomies->get_restricting_taxonomies();
 			foreach ( $restricting_taxonomies as $restricting_taxonomy ) {
-				$this->auxiliary_queries['post__not_in'][] = trc_Core_FastIDQuery::instance( array(
+				$this->auxiliary_queries['post__in'][] = trc_Core_FastIDQuery::instance( array(
 					'post_type' => $queried_restricted_post_types,
 					'tax_query' => $this->filtering_tax_query_generator->get_tax_query_for( $restricting_taxonomy )
 				) );

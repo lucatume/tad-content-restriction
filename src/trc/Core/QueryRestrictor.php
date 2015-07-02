@@ -158,7 +158,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 			return;
 		}
 
-		$post__not_in = array_unique( array_merge( $query->get( 'post__not_in', array() ), $excluded_ids ) );
-		$query->set( 'post__not_in', $post__not_in );
+		$post__in = array_unique( array_merge( $query->get( 'post__in', array() ), $excluded_ids ) );
+		$query->set( 'post__in', $post__in );
 	}
 }
