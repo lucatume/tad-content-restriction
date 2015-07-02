@@ -67,7 +67,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		$post->post_type = 'post';
 		Test::replace( 'get_post', $post );
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ ] )->get();
 
 		$sut->set_taxonomies( $taxonomies );
 
@@ -87,7 +87,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', array() );
@@ -114,7 +114,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a', 'tax_b' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', function ( $_, $tax ) {
@@ -149,7 +149,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a', 'tax_b' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', function ( $_, $tax ) {
@@ -177,7 +177,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', function ( $_, $tax ) {
@@ -207,7 +207,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2' ] );
@@ -232,7 +232,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1' ] );
@@ -259,7 +259,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2', 'term_3' ] );
@@ -286,7 +286,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2' ] );
@@ -311,7 +311,7 @@ class trc_Core_UserTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'get_post', $post );
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::replace( 'wp_get_object_terms', [ 'term_1', 'term_2' ] );

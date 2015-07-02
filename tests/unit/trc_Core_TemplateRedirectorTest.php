@@ -20,7 +20,7 @@ class trc_Core_TemplateRedirectorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_redirect_if_there_are_no_restricting_taxonomies() {
 		$sut = new trc_Core_TemplateRedirector();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies_for', [ ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		Test::assertEquals( 'foo', $sut->maybe_redirect( 'foo' ) );
@@ -33,7 +33,7 @@ class trc_Core_TemplateRedirectorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_redirect_if_content_restriction_is_deactivated_for_template() {
 		$sut = new trc_Core_TemplateRedirector();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		$templates = Test::replace( 'trc_Core_TemplatesInterface' )->method( 'should_restrict_template', false )->get();
@@ -49,7 +49,7 @@ class trc_Core_TemplateRedirectorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_redirect_if_the_current_post_type_is_not_a_restricted_post_type() {
 		$sut = new trc_Core_TemplateRedirector();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		$templates = Test::replace( 'trc_Core_TemplatesInterface' )->method( 'should_restrict_template', true )->get();
@@ -70,7 +70,7 @@ class trc_Core_TemplateRedirectorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_not_redirect_if_user_can_access_post() {
 		$sut = new trc_Core_TemplateRedirector();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		$templates = Test::replace( 'trc_Core_TemplatesInterface' )->method( 'should_restrict_template', true )->get();
@@ -94,7 +94,7 @@ class trc_Core_TemplateRedirectorTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_redirect_if_user_has_no_access_to_post() {
 		$sut = new trc_Core_TemplateRedirector();
 
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies', [ 'tax_a' ] )->get();
+		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )->get();
 		$sut->set_taxonomies( $taxonomies );
 
 		$templates = Test::replace( 'trc_Core_TemplatesInterface' )->method( 'should_restrict_template', true )

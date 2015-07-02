@@ -58,7 +58,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 * @return bool
 	 */
 	public function should_restrict_query( WP_Query &$query ) {
-		if ( empty( $this->taxonomies->get_restricting_taxonomies( $query->get( 'post_type' ) ) ) ) {
+		if ( empty( $this->taxonomies->get_restricting_taxonomies_for( $query->get( 'post_type' ) ) ) ) {
 			return false;
 		}
 
@@ -81,10 +81,12 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 */
 	public function restrict_query( WP_Query &$query ) {
 		$post_types             = $query->get( 'post_type' );
-		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies( $post_types );
+		$post_types             = is_array( $post_types ) ? $post_types : array( $post_types );
+		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies_for( $post_types );
 
 		$queried_restricted_post_types   = $this->post_types->get_restricted_post_types_in( $post_types );
 		$queried_unrestricted_post_types = array_diff( $post_types, $queried_restricted_post_types );
+		// analyze query and run accessory queries
 		if ( $queried_unrestricted_post_types ) {
 			$this->add_excluded_post_ids_to( $query, $restricting_taxonomies, $queried_restricted_post_types );
 		} else {
@@ -137,7 +139,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 * @param array    $post_types
 	 */
 	protected function add_excluded_post_ids_to( WP_Query &$query, array $restricting_taxonomies, array $post_types ) {
-		$excluded_query = trc_Core_Query::instance( [
+		$excluded_query = trc_Core_FastIDQuery::instance( [
 			'post_type'        => $post_types,
 			'suppress_filters' => true,
 			'nopaging'         => true,

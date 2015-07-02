@@ -28,7 +28,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -48,7 +48,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -68,7 +68,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -89,7 +89,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -115,7 +115,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -150,7 +150,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a', 'tax_b' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -185,7 +185,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a', 'tax_b' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a', 'tax_b' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -224,7 +224,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -245,10 +245,10 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$query->tax_query          = new stdClass();
 		$query->tax_query->queries = [ ];
 
-		$trc_query = Test::replace( 'trc_Core_Query' )
+		$trc_query = Test::replace( 'trc_Core_FastIDQuery' )
 		                 ->method( 'get_posts', [ ] )
 		                 ->get();
-		Test::replace( 'trc_Core_Query::instance', $trc_query );
+		Test::replace( 'trc_Core_FastIDQuery::instance', $trc_query );
 		$sut->restrict_query( $query );
 
 		$filtering_taxonomy_generator->wasNotCalled( 'get_tax_query_for' );
@@ -262,7 +262,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$sut = new trc_Core_QueryRestrictor();
 
 		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomies' )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_a' ] )
+		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_a' ] )
 		                  ->get();
 		$sut->set_taxonomies( $taxonomies );
 
@@ -293,10 +293,10 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		                            ->get();
 		$query->post_types    = [ 'post', 'page' ];
 
-		$trc_query = Test::replace( 'trc_Core_Query' )
+		$trc_query = Test::replace( 'trc_Core_FastIDQuery' )
 		                 ->method( 'get_posts', $excluded )
 		                 ->get();
-		Test::replace( 'trc_Core_Query::instance', $trc_query );
+		Test::replace( 'trc_Core_FastIDQuery::instance', $trc_query );
 
 		$sut->restrict_query( $query );
 

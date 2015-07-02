@@ -35,7 +35,7 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 		$sut->add( 'foo' );
 		Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
 
-		Test::assertEquals( [ 'foo' ], $sut->get_restricting_taxonomies( 'post' ) );
+		Test::assertEquals( [ 'foo' ], $sut->get_restricting_taxonomies_for( 'post' ) );
 	}
 
 	/**
@@ -47,7 +47,7 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
 
-		$sut->get_restricting_taxonomies( 'post' );
+		$sut->get_restricting_taxonomies_for( 'post' );
 
 		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'post' ] ] ] );
 	}
@@ -61,7 +61,7 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
 
-		$sut->get_restricting_taxonomies( [ 'post', 'page' ] );
+		$sut->get_restricting_taxonomies_for( [ 'post', 'page' ] );
 
 		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'post', 'page' ] ] ] );
 	}
@@ -75,7 +75,7 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'get_taxonomies', [ ] );
 
-		$taxonomies = $sut->get_restricting_taxonomies( [ 'post' => 23 ] );
+		$taxonomies = $sut->get_restricting_taxonomies_for( [ 'post' => 23 ] );
 
 		Test::assertEmpty( $taxonomies );
 	}
@@ -91,10 +91,10 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
-			return $tag == 'trc_restricting_taxonomies' ? [ 'tax_c', 'tax_d' ] : $val;
+			return $tag == 'trc_post_type_restricting_taxonomies' ? [ 'tax_c', 'tax_d' ] : $val;
 		} );
 
-		Test::assertEquals( [ 'tax_c', 'tax_d' ], $sut->get_restricting_taxonomies( 'post' ) );
+		Test::assertEquals( [ 'tax_c', 'tax_d' ], $sut->get_restricting_taxonomies_for( 'post' ) );
 	}
 
 	/**
@@ -108,9 +108,9 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
-			return $tag == 'trc_restricting_taxonomies' ? [ 'tax_a' ] : $val;
+			return $tag == 'trc_post_type_restricting_taxonomies' ? [ 'tax_a' ] : $val;
 		} );
 
-		Test::assertEquals( [ 'tax_a' ], $sut->get_restricting_taxonomies( 'post' ) );
+		Test::assertEquals( [ 'tax_a' ], $sut->get_restricting_taxonomies_for( 'post' ) );
 	}
 }

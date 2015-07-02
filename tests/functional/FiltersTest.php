@@ -31,7 +31,7 @@ class FiltersTest extends \WP_UnitTestCase {
 	 * it should allow setting up restriction using filters only
 	 */
 	public function it_should_allow_setting_up_restriction_using_filters_only() {
-		add_filter( 'trc_restricting_taxonomies', function () {
+		add_filter( 'trc_post_type_restricting_taxonomies', function () {
 			return [ 'tax_1' ];
 		} );
 		add_filter( 'trc_restricted_post_types', function () {
