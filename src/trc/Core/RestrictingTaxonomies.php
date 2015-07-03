@@ -14,7 +14,8 @@ class trc_Core_RestrictingTaxonomies implements trc_Core_RestrictingTaxonomiesIn
 
 	public function get_restricting_taxonomies_for( $post_type ) {
 		$post_types = is_array( $post_type ) ? $post_type : array( $post_type );
-		$taxonomies = array_intersect( $this->taxonomies, array_keys( get_taxonomies( array( 'object_type' => $post_types ) ) ) );
+
+		$taxonomies = $this->get_taxonomies_for_post_types( $post_types );
 
 		return apply_filters( 'trc_post_type_restricting_taxonomies', $taxonomies, $post_types );
 	}
@@ -39,5 +40,20 @@ class trc_Core_RestrictingTaxonomies implements trc_Core_RestrictingTaxonomiesIn
 	 */
 	public function get_restricting_taxonomies() {
 		return apply_filters( 'trc_restricting_taxonomies', $this->taxonomies );
+	}
+
+	/**
+	 * @param array $post_types
+	 *
+	 * @return array
+	 */
+	protected function get_taxonomies_for_post_types( $post_types ) {
+		$taxonomies = array();
+		foreach ( $post_types as $post_type ) {
+			$taxonomies = array_merge( $taxonomies, get_taxonomies( array( 'object_type' => array( $post_type ) ) ) );
+		}
+		$taxonomies = array_intersect( $this->taxonomies, array_unique( $taxonomies ) );
+
+		return $taxonomies;
 	}
 }

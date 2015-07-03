@@ -23,6 +23,11 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 */
 	protected $queries;
 
+	/**
+	 * @var array
+	 */
+	protected $unaccessible_restricted_ids;
+
 	public static function instance() {
 		$instance = new self;
 
@@ -65,6 +70,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		if ( ! $this->queries->should_restrict_queries() ) {
 			return false;
 		}
+
 		if ( ! $this->queries->should_restrict_query( $query ) ) {
 			return false;
 		}
@@ -85,18 +91,27 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		$restricting_taxonomies = $this->taxonomies->get_restricting_taxonomies_for( $post_types );
 
 		$query_manager = trc_Core_QueryManager::instance( $query )
-		                                      ->manage();
+		                                      ->analyze();
 
-		if ( $query_manager->has_auxiliary_queries() ) {
-			foreach ( $query_manager->get_auxiliary_queries() as $query_var => $auxiliary_sub_queries ) {
-				foreach ( $auxiliary_sub_queries as $auxiliary_sub_query ) {
-					$query->set( $query_var, array_unique( array_merge( $query->get( $query_var, array() ), $auxiliary_sub_query->get_posts() ) ) );
-				}
-			}
+		if ( $query_manager->requires_splitting() ) {
+			add_filter( 'posts_results', array( $this, 'remove_unaccessible_posts' ) );
+			$this->unaccessible_restricted_ids = $query_manager->get_unaccessible_restricted_ids();
 		} else {
 			$this->add_filtering_tax_query_to( $query, $restricting_taxonomies );
 		}
+	}
 
+	/**
+	 * @param WP_Post[] $posts
+	 */
+	public function remove_unaccessible_posts( array $posts ) {
+		remove_filter( 'posts_results', array( $this, 'remove_unaccessible_posts' ) );
+
+		return array_filter( $posts, array( $this, 'is_accessible' ) );
+	}
+
+	protected function is_accessible( WP_Post $post ) {
+		return ! in_array( $post->ID, $this->unaccessible_restricted_ids );
 	}
 
 	/**
@@ -159,7 +174,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 			return;
 		}
 
-		$post__not_in = array_unique( array_merge( $query->get( 'post__not_in', array() ), $excluded_ids ) );
-		$query->set( 'post__not_in', $post__not_in );
+		$post__in = array_unique( array_merge( $query->get( 'post__in', array() ), $excluded_ids ) );
+		$query->set( 'post__in', $post__in );
 	}
 }

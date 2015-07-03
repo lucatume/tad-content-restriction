@@ -16,8 +16,6 @@ class trc_Core_FilteringTaxQueryGenerator implements trc_Core_FilteringTaxQueryG
 	/**
 	 * @param      $restricting_tax_name
 	 *
-	 * @param bool $include Whether the `IN` or the `NOT IN` operators should be used.
-	 *
 	 * @return array|WP_Error Either a tax query array or a WP_Error if the user is not set or the taxonomy is not a
 	 *                        string.
 	 */

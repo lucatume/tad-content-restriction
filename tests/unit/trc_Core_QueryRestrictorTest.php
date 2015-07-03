@@ -290,7 +290,7 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		$excluded             = [ '1', '2', '3' ];
 		$_query               = new stdClass();
 		$_query->post_type    = [ 'post', 'page' ];
-		$_query->post__not_in = [ ];
+		$_query->post__in = [ ];
 		$query                = Test::replace( 'WP_Query' )
 		                            ->method( 'get_posts', $excluded )
 		                            ->method( 'set', function ( $key, $value ) use ( $_query ) {
@@ -308,14 +308,14 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 		Test::replace( 'trc_Core_FastIDQuery::instance', $trc_query );
 
 		$this->replace_query_manager( true, [
-			'post__not_in' => [
+			'post__in' => [
 				Test::replace( 'WP_Query::get_posts', [ 1, 2, 3 ] )
 			]
 		] );
 
 		$sut->restrict_query( $query );
 
-		Test::assertEquals( $excluded, $_query->post__not_in );
+		Test::assertEquals( $excluded, $_query->post__in );
 	}
 
 	/**
@@ -324,8 +324,8 @@ class trc_Core_QueryRestrictorTest extends \PHPUnit_Framework_TestCase {
 	 */
 	protected function replace_query_manager( $has_auxiliary_queries, $auxiliary_queries ) {
 		$query_manager = Test::replace( 'trc_Core_QueryManager' )
-		                     ->method( 'has_auxiliary_queries', $has_auxiliary_queries )
-		                     ->method( 'get_auxiliary_queries', $auxiliary_queries )
+		                     ->method( 'requires_splitting', $has_auxiliary_queries )
+		                     ->method( 'get_accessible_ids', $auxiliary_queries )
 		                     ->get();
 		Test::replace( 'trc_Core_QueryManager::instance', $query_manager );
 	}

@@ -14,12 +14,15 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		// your set up methods here
 		Test::setUp();
 
-		$user = Test::replace( 'WP_User' )->get();
+		$user = Test::replace( 'WP_User' )
+		            ->get();
 		Test::replace( 'get_user_by', $user );
 
 		tests_add_filter( 'pre_get_posts', [ trc_Core_QueryRestrictor::instance(), 'maybe_restrict_query' ] );
 		tests_add_filter( 'init', function () {
-			register_post_type( 'notice' );
+			register_post_type( 'post_type_1' );
+			register_post_type( 'post_type_2' );
+			register_post_type( 'post_type_3' );
 		} );
 	}
 
@@ -52,7 +55,8 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		trc_Core_Plugin::instance()->taxonomies->add( $tax_name );
 
 		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-		                          ->method( 'get_user_slugs', [ 'term_1' ] )->get();
+		                          ->method( 'get_user_slugs', [ 'term_1' ] )
+		                          ->get();
 		trc_Core_Plugin::instance()->user->add_user_slug_provider( $tax_name, $user_slug_provider );
 
 		$posts = ( new WP_Query( [ 'post_type' => 'post' ] ) )->get_posts();
@@ -90,11 +94,13 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		trc_Core_Plugin::instance()->taxonomies->add( 'tax_2' );
 
 		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-		                          ->method( 'get_user_slugs', 'term_11' )->get();
+		                          ->method( 'get_user_slugs', 'term_11' )
+		                          ->get();
 		trc_Core_Plugin::instance()->user->add_user_slug_provider( 'tax_1', $user_slug_provider );
 
 		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-		                          ->method( 'get_user_slugs', 'term_12' )->get();
+		                          ->method( 'get_user_slugs', 'term_12' )
+		                          ->get();
 		trc_Core_Plugin::instance()->user->add_user_slug_provider( 'tax_2', $user_slug_provider );
 
 		$posts = ( new WP_Query( [ 'post_type' => 'post' ] ) )->get_posts();
@@ -110,11 +116,11 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 	public function it_should_allow_restricting_access_to_custom_post_types() {
 		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
 
-		$accessible   = $this->factory->post->create_and_get( [ 'post_type' => 'notice' ] );
-		$unaccessible = $this->factory->post->create_and_get( [ 'post_type' => 'notice' ] );
+		$accessible   = $this->factory->post->create_and_get( [ 'post_type' => 'post_type_1' ] );
+		$unaccessible = $this->factory->post->create_and_get( [ 'post_type' => 'post_type_1' ] );
 
 		$tax_name = 'tax_1';
-		register_taxonomy( $tax_name, 'notice' );
+		register_taxonomy( $tax_name, 'post_type_1' );
 		wp_insert_term( 'term_1', $tax_name );
 		wp_insert_term( 'term_2', $tax_name );
 
@@ -122,15 +128,17 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 		wp_set_object_terms( $unaccessible->ID, 'term_2', 'tax_1' );
 
 		trc_Core_Plugin::instance()->taxonomies->add( 'tax_1' );
-		trc_Core_Plugin::instance()->post_types->add_restricted_post_type( 'notice' );
+		trc_Core_Plugin::instance()->post_types->add_restricted_post_type( 'post_type_1' );
 
 		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-		                          ->method( 'get_user_slugs', 'term_1' )->get();
+		                          ->method( 'get_user_slugs', 'term_1' )
+		                          ->get();
 		trc_Core_Plugin::instance()->user->add_user_slug_provider( 'tax_1', $user_slug_provider );
 
-		$posts = ( new WP_Query( [ 'post_type' => 'notice' ] ) )->get_posts();
+		$posts = ( new WP_Query( [ 'post_type' => 'post_type_1' ] ) )->get_posts();
 
 		Test::assertCount( 1, $posts );
 		Test::assertEquals( $accessible, $posts[0] );
 	}
+
 }
