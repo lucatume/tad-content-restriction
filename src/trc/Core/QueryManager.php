@@ -111,7 +111,9 @@ class trc_Core_QueryManager {
 	 * @return bool
 	 */
 	public function requires_splitting() {
-		return (bool) array_diff( $this->queried_post_types, $this->queried_unrestricted_post_types );
+		$queried_count = count( $this->queried_post_types );
+
+		return $queried_count != count( $this->queried_unrestricted_post_types ) && $queried_count != count( $this->queried_restricted_post_types );
 	}
 
 	public function analyze() {
