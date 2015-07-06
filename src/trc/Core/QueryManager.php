@@ -1,17 +1,12 @@
 <?php
 
 
-class trc_Core_QueryManager {
+class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 
 	/**
 	 * @var WP_Query
 	 */
-	protected $original_query;
-
-	/**
-	 * @var WP_Query
-	 */
-	protected $main_query;
+	protected $query;
 
 	/**
 	 * @var trc_Core_PostTypesInterface
@@ -48,17 +43,25 @@ class trc_Core_QueryManager {
 	protected $queried_restricted_post_types = array();
 
 	/**
-	 * @param WP_Query $query
-	 *
-	 * @return trc_Core_QueryManager
+	 * @var trc_Core_FilteringTaxQueryGeneratorInterface
 	 */
-	public static function instance( WP_Query $query ) {
+	protected $filtering_taxonomy_generator;
+
+	/**
+	 * @var trc_Core_ExcludedPostsQuery
+	 */
+	protected $excluded_posts_query;
+
+	/**
+	 * @return trc_Core_QueryScrutinizer
+	 */
+	public static function instance() {
 		$instance = new self();
 
 		$instance->post_types                    = trc_Core_Plugin::instance()->post_types;
 		$instance->restricting_taxonomies        = trc_Core_Plugin::instance()->taxonomies;
 		$instance->filtering_tax_query_generator = trc_Core_FilteringTaxQueryGenerator::instance();
-		$instance->set_query( $query );
+		$instance->excluded_posts_query          = trc_Core_ExcludedPostsQuery::instance();
 
 		return $instance;
 	}
@@ -67,7 +70,7 @@ class trc_Core_QueryManager {
 	 * @param WP_Query $query
 	 */
 	public function set_query( WP_Query &$query ) {
-		$this->main_query                  = $query;
+		$this->query                       = $query;
 		$this->unaccessbile_restricted_ids = array();
 
 		return $this;
@@ -85,8 +88,8 @@ class trc_Core_QueryManager {
 	/**
 	 * @return WP_Query
 	 */
-	public function get_main_query() {
-		return $this->main_query;
+	public function get_query() {
+		return $this->query;
 	}
 
 	/**
@@ -94,10 +97,6 @@ class trc_Core_QueryManager {
 	 */
 	public function set_restricting_taxonomies( trc_Core_RestrictingTaxonomiesInterface $restricting_taxonomies ) {
 		$this->restricting_taxonomies = $restricting_taxonomies;
-	}
-
-	public function get_accessible_ids() {
-		return $this->unaccessbile_restricted_ids;
 	}
 
 	/**
@@ -110,19 +109,24 @@ class trc_Core_QueryManager {
 	/**
 	 * @return bool
 	 */
-	public function requires_splitting() {
+	public function is_mixed_restriction_query() {
 		$queried_count = count( $this->queried_post_types );
 
 		return $queried_count != count( $this->queried_unrestricted_post_types ) && $queried_count != count( $this->queried_restricted_post_types );
 	}
 
-	public function analyze() {
-		if ( empty( $this->main_query ) || $this->main_query->get( 'norestriction', false ) ) {
+	public function scrutinize() {
+		if ( empty( $this->query ) || $this->query->get( 'norestriction', false ) ) {
 			return $this;
 		}
 
-		$queried_post_types       = $this->main_query->get( 'post_type' );
-		$this->queried_post_types = is_array( $queried_post_types ) ? $queried_post_types : array( $queried_post_types );
+		$queried_post_types = $this->query->get( 'post_type' );
+
+		if ( empty( $queried_post_types ) ) {
+			$this->queried_post_types = array();
+		} else {
+			$this->queried_post_types = is_array( $queried_post_types ) ? $queried_post_types : array( $queried_post_types );
+		}
 
 		$this->queried_restricted_post_types   = $this->post_types->get_restricted_post_types_in( $this->queried_post_types );
 		$this->queried_unrestricted_post_types = array_values( array_diff( $this->queried_post_types, $this->queried_restricted_post_types ) );
@@ -130,24 +134,44 @@ class trc_Core_QueryManager {
 		return $this;
 	}
 
-	public function get_unaccessible_restricted_ids() {
+	protected function get_unaccessible_restricted_ids() {
 		if ( $this->queried_unrestricted_post_types && empty( $this->unaccessbile_restricted_ids ) ) {
 			/** @var \wpdb $wpdb */
 			global $wpdb;
 
 			$restricting_taxonomies = $this->restricting_taxonomies->get_restricting_taxonomies_for( $this->queried_restricted_post_types );
-			foreach ( $restricting_taxonomies as $restricting_taxonomy ) {
-				$tax_query     = new WP_Tax_Query( array( $this->filtering_tax_query_generator->get_tax_query_for( $restricting_taxonomy, false ) ) );
-				$sql           = $tax_query->get_sql( $wpdb->posts, 'ID' );
-				$post_types_in = "('" . implode( "','", $this->queried_restricted_post_types ) . "')";
-				$where         = "WHERE {$wpdb->posts}.post_type IN $post_types_in {$sql['where']}";
-				$query         = "SELECT ID from {$wpdb->posts} {$sql['join']} {$where}";
-				$ids           = $wpdb->get_col( $query );
 
-				$this->unaccessbile_restricted_ids = array_merge( $this->unaccessbile_restricted_ids, $ids );
-			}
+			$this->unaccessbile_restricted_ids = $this->excluded_posts_query->get_excluded_posts( $restricting_taxonomies, $this->queried_restricted_post_types );
+
 		}
 
 		return $this->unaccessbile_restricted_ids;
+	}
+
+	public function set_excluded_posts() {
+		$this->query->set( 'post__not_in', array_unique( array_merge( $this->query->get( 'post__not_in', array() ), $this->get_unaccessible_restricted_ids() ) ) );
+	}
+
+	public function is_querying_restricted_post_types() {
+		return count( $this->queried_restricted_post_types ) > 0;
+	}
+
+	public function add_filtering_tax_query() {
+		$restricting_taxonomies = $this->restricting_taxonomies->get_restricting_taxonomies_for( $this->queried_restricted_post_types );
+		foreach ( $restricting_taxonomies as $restricting_tax_name ) {
+			$this->query->tax_query->queries[] = $this->filtering_taxonomy_generator->get_tax_query_for( $restricting_tax_name );
+		}
+		$this->query->query_vars['tax_query'] = $this->query->tax_query->queries;
+	}
+
+	/**
+	 * @param trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy_generator
+	 */
+	public function set_filtering_taxonomy_generator( $filtering_taxonomy_generator ) {
+		$this->filtering_taxonomy_generator = $filtering_taxonomy_generator;
+	}
+
+	public function set_excluded_posts_query( trc_Core_ExcludedPostsQueryInterface $excluded_posts_query ) {
+		$this->excluded_posts_query = $excluded_posts_query;
 	}
 }

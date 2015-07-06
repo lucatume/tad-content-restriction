@@ -17,127 +17,122 @@ class trc_Core_QueryManagerTest extends \PHPUnit_Framework_TestCase {
 	 * it should be instantiatable
 	 */
 	public function it_should_be_instantiatable() {
-		Test::assertInstanceOf( 'trc_Core_QueryManager', new trc_Core_QueryManager() );
+		Test::assertInstanceOf( 'trc_Core_QueryScrutinizer', new trc_Core_QueryScrutinizer() );
+	}
+
+	public function mixedPostTypes() {
+		return [
+			// expected, post types, restricted post types
+			[ true, [ 'post', 'page' ], [ 'post' ] ],
+			[ false, [ 'post', 'page' ], [ 'post', 'page' ] ],
+			[ false, [ 'post', 'page' ], [ ] ],
+			[ true, [ 'post', 'page', 'notice' ], [ 'post', 'page' ] ],
+			[ false, [ 'post', 'page', 'notice' ], [ ] ],
+			[ false, [ 'post' ], [ 'page', 'notice' ] ],
+			[ false, [ ], [ 'post', 'page' ] ],
+			[ false, [ ], [ 'post' ] ]
+		];
 	}
 
 	/**
 	 * @test
-	 * it should return the original query if no restricted post types are queried in it
+	 * it should spot mixed restriction post type queries
+	 * @dataProvider mixedPostTypes
 	 */
-	public function it_should_return_the_original_query_if_no_restricted_post_types_are_queried_in_it() {
+	public function it_should_spot_mixed_restriction_post_type_queries( $expected, $post_types, $restricted_post_types ) {
+
 		$query      = Test::replace( 'WP_Query' )
-		                  ->method( 'get', [ 'post' ] )
+		                  ->method( 'get', function ( $key, $default ) use ( $post_types ) {
+			                  return $key == 'post_type' ? $post_types : $default;
+		                  } )
 		                  ->get();
 		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
-		                  ->method( 'get_restricted_post_types', [ 'page' ] )
-		                  ->method( 'get_restricted_post_types_in', [ ] )
+		                  ->method( 'get_restricted_post_types_in', $restricted_post_types )
 		                  ->get();
 
-		$sut = new trc_Core_QueryManager();
+		$sut = new trc_Core_QueryScrutinizer();
 		$sut->set_post_types( $post_types );
 
 		$sut->set_query( $query )
-		    ->manage();
+		    ->scrutinize();
 
-		Test::assertEquals( $query, $sut->get_main_query() );
+		Test::assertEquals( $expected, $sut->is_mixed_restriction_query() );
+	}
+
+	public function restrictedPostTypes() {
+		return [
+			// expected, post types, restricted post types
+			[ true, [ 'post', 'page' ], [ 'post' ] ],
+			[ true, [ 'post', 'page' ], [ 'post', 'page' ] ],
+			[ false, [ 'post', 'page' ], [ ] ],
+			[ true, [ 'post', 'page', 'notice' ], [ 'post', 'page' ] ],
+			[ false, [ 'post', 'page', 'notice' ], [ ] ],
+			[ false, [ 'post' ], [ ] ],
+			[ false, [ ], [ ] ],
+			[ false, [ ], [ ] ]
+		];
 	}
 
 	/**
 	 * @test
-	 * it should return the same query if one restricted post type and one restricting taxonomy
+	 * it should properly identify queries for restricted post types
+	 * @dataProvider restrictedPostTypes
 	 */
-	public function it_should_return_the_same_query_if_one_restricted_post_type_and_one_restricting_taxonomy() {
+	public function it_should_properly_identify_queries_for_restricted_post_types( $expected, $post_types, $restricted_post_types ) {
+
 		$query      = Test::replace( 'WP_Query' )
-		                  ->method( 'get', [ 'post' ] )
+		                  ->method( 'get', function ( $key, $default ) use ( $post_types ) {
+			                  return $key == 'post_type' ? $post_types : $default;
+		                  } )
 		                  ->get();
 		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
-		                  ->method( 'get_restricted_post_types', [ 'post' ] )
-		                  ->method( 'get_restricted_post_types_in', [ 'post' ] )
-		                  ->get();
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_1' ] )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_1' ] )
+		                  ->method( 'get_restricted_post_types_in', $restricted_post_types )
 		                  ->get();
 
-		$sut = new trc_Core_QueryManager();
+		$sut = new trc_Core_QueryScrutinizer();
 		$sut->set_post_types( $post_types );
-		$sut->set_restricting_taxonomies( $taxonomies );
 
 		$sut->set_query( $query )
-		    ->manage();
+		    ->scrutinize();
 
-		Test::assertEquals( $query, $sut->get_main_query() );
+		Test::assertEquals( $expected, $sut->is_querying_restricted_post_types() );
 	}
 
 	/**
 	 * @test
-	 * it should set post type on main query to unrestricted only if querying for one restricted and one unrestricted
-	 * post type
+	 * it should set the excluded posts on the query
 	 */
-	public function it_should_set_post_type_on_main_query_to_unrestricted_only_if_querying_for_one_restricted_and_one_unrestricted_post_type() {
-		$query      = Test::replace( 'WP_Query' )
-		                  ->method( 'get', [ 'post', 'page' ] )
-		                  ->method( 'set' )
-		                  ->get();
-		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
-		                  ->method( 'get_restricted_post_types', [ 'post' ] )
-		                  ->method( 'get_restricted_post_types_in', [ 'post' ] )
-		                  ->get();
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_1' ] )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_1' ] )
-		                  ->get();
+	public function it_should_set_the_excluded_posts_on_the_query() {
+		$taxonomies            = [ 'tax_1' ];
+		$excluded_post_ids     = [ 1, 2, 3 ];
+		$restricted_post_types = [ 'post' ];
+		$queried_post_types    = [ 'post', 'page' ];
 
-		$filtering_tax_query_generator = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )
-		                                     ->method( 'get_tax_query_for', 'tax_query' )
-		                                     ->get();
+		$restricting_taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
+		                              ->method( 'get_restricting_taxonomies', $taxonomies )
+		                              ->method( 'get_restricting_taxonomies_for', $taxonomies )
+		                              ->get( '' );
+		$post_types             = Test::replace( 'trc_Core_RestrictedPostTypesInterface' )
+		                              ->method( 'get_restricted_post_types_in', $restricted_post_types )
+		                              ->get();
+		$excluded_posts_query   = Test::replace( 'trc_Core_ExcludedPostsQueryInterface' )
+		                              ->method( 'get_excluded_posts', $excluded_post_ids )
+		                              ->get();
+		$query                  = Test::replace( 'WP_Query' )
+		                              ->method( 'set' )
+		                              ->method( 'get', function ( $key, $default ) use ( $queried_post_types ) {
+			                              return $key == 'post_type' ? $queried_post_types : $default;
+		                              } )
+		                              ->get();
 
-		Test::replace( 'trc_Core_FastIDQuery::instance', new stdClass() );
-
-		$sut = new trc_Core_QueryManager();
+		$sut = new trc_Core_QueryScrutinizer();
+		$sut->set_restricting_taxonomies( $restricting_taxonomies );
+		$sut->set_excluded_posts_query( $excluded_posts_query );
 		$sut->set_post_types( $post_types );
-		$sut->set_restricting_taxonomies( $taxonomies );
-		$sut->set_filtering_tax_query_generator( $filtering_tax_query_generator );
+		$sut->set_query( $query );
 
-		$sut->set_query( $query )
-		    ->manage();
+		$sut->set_excluded_posts();
 
-		$query->wasCalledWithOnce( [ 'post_type', [ 'page' ] ], 'set' );
-	}
-
-	/**
-	 * @test
-	 * it should create a subquery if querying for unrestricted and one restricted post type with one restriction tax
-	 */
-	public function it_should_create_a_subquery_if_querying_for_unrestricted_and_one_restricted_post_type_with_one_restriction_tax() {
-		$query      = Test::replace( 'WP_Query' )
-		                  ->method( 'get', [ 'post', 'page' ] )
-		                  ->method( 'set' )
-		                  ->get();
-		$post_types = Test::replace( 'trc_Core_PostTypesInterface' )
-		                  ->method( 'get_restricted_post_types', [ 'post' ] )
-		                  ->method( 'get_restricted_post_types_in', [ 'post' ] )
-		                  ->get();
-		$taxonomies = Test::replace( 'trc_Core_RestrictingTaxonomiesInterface' )
-		                  ->method( 'get_restricting_taxonomies_for', [ 'tax_1' ] )
-		                  ->method( 'get_restricting_taxonomies', [ 'tax_1' ] )
-		                  ->get();
-
-		$filtering_tax_query_generator = Test::replace( 'trc_Core_FilteringTaxQueryGenerator' )
-		                                     ->method( 'get_tax_query_for', 'tax_query' )
-		                                     ->get();
-
-		Test::replace( 'trc_Core_FastIDQuery::instance', new stdClass() );
-
-		$sut = new trc_Core_QueryManager();
-		$sut->set_post_types( $post_types );
-		$sut->set_restricting_taxonomies( $taxonomies );
-		$sut->set_filtering_tax_query_generator( $filtering_tax_query_generator );
-
-		$sut->set_query( $query )
-		    ->manage();
-
-		Test::assertCount( 1, $sut->get_accessible_ids() );
-		Test::assertCount( 1, $sut->get_accessible_ids( 'post__in' ) );
+		$query->wasCalledWithOnce( [ 'post__not_in', $excluded_post_ids ], 'set' );
 	}
 }
