@@ -49,7 +49,7 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 	 * @param WP_Query $query
 	 */
 	public function set_query( WP_Query &$query ) {
-		$this->query                       = $query;
+		$this->query = $query;
 
 		return $this;
 	}
@@ -74,9 +74,25 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 	 * @return bool
 	 */
 	public function is_mixed_restriction_query() {
-		$queried_count = count( $this->queried_post_types );
+		if ( count( $this->queried_restricted_post_types ) == 0 ) {
+			return false;
+		}
 
-		return $queried_count != count( $this->queried_unrestricted_post_types ) && $queried_count != count( $this->queried_restricted_post_types );
+		if ( count( $this->queried_unrestricted_post_types ) > 0 ) {
+			return true;
+		}
+
+		$restricting_taxonomies       = $this->restricting_taxonomies->get_restricting_taxonomies();
+		$restricting_taxonomies_count = count( $restricting_taxonomies );
+
+		foreach ( $this->queried_restricted_post_types as $queried_restricted_post_type ) {
+			$post_type_restricting_taxonomies = $this->restricting_taxonomies->get_restricting_taxonomies_for( $queried_restricted_post_type );
+
+
+			if ( count( array_intersect( $restricting_taxonomies, $post_type_restricting_taxonomies ) ) < $restricting_taxonomies_count ) {
+				return true;
+			}
+		}
 	}
 
 	public function scrutinize() {
@@ -99,6 +115,16 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 	}
 
 	public function is_querying_restricted_post_types() {
-		return count( $this->queried_restricted_post_types ) > 0;
+		$querying_restricted_post_types = count( $this->queried_restricted_post_types ) > 0;
+		if ( $querying_restricted_post_types ) {
+			$applied_restricting_taxonomy_count = 0;
+			foreach ( $this->queried_restricted_post_types as $post_type ) {
+				$applied_restricting_taxonomy_count += count( $this->restricting_taxonomies->get_restricting_taxonomies_for( $post_type ) );
+			}
+
+			$querying_restricted_post_types = $applied_restricting_taxonomy_count > 0;
+		}
+
+		return $querying_restricted_post_types;
 	}
 }
