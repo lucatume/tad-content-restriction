@@ -21,7 +21,7 @@ class trc_Core_User implements trc_Core_UserInterface {
 	public static function instance() {
 		$instance = new self;
 
-		$instance->user       = get_user_by( 'id', get_current_user_id() );
+		$instance->wp_user    = get_user_by( 'id', get_current_user_id() );
 		$instance->taxonomies = trc_Core_Plugin::instance()->taxonomies;
 
 		return $instance;

@@ -16,6 +16,8 @@ class trc_Core_PostTypes implements trc_Core_PostTypesInterface {
 	}
 
 	/**
+	 * @param $post_type
+	 *
 	 * @return bool
 	 */
 	public function is_restricted_post_type( $post_type ) {

@@ -47,6 +47,8 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 
 	/**
 	 * @param WP_Query $query
+	 *
+	 * @return $this
 	 */
 	public function set_query( WP_Query &$query ) {
 		$this->query = $query;
@@ -56,6 +58,8 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 
 	/**
 	 * @param trc_Core_PostTypesInterface $post_types
+	 *
+	 * @return $this
 	 */
 	public function set_post_types( trc_Core_PostTypesInterface $post_types ) {
 		$this->post_types = $post_types;
@@ -93,6 +97,8 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 				return true;
 			}
 		}
+
+		return false;
 	}
 
 	public function scrutinize() {

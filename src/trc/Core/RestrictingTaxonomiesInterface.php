@@ -21,7 +21,7 @@ interface trc_Core_RestrictingTaxonomiesInterface {
 	public function get_restricting_taxonomies_for( $post_type );
 
 	/**
-	 * @param sring $taxonomy
+	 * @param string $taxonomy
 	 *
 	 * @return trc_Core_RestrictingTaxonomiesInterface
 	 */
