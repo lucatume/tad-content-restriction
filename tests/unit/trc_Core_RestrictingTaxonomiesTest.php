@@ -63,7 +63,8 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 
 		$sut->get_restricting_taxonomies_for( [ 'post', 'page' ] );
 
-		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'post', 'page' ] ] ] );
+		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'post' ] ] ] );
+		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'page' ] ] ] );
 	}
 
 	/**
