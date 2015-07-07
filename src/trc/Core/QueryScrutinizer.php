@@ -127,4 +127,8 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 
 		return $querying_restricted_post_types;
 	}
+
+	public function get_queried_restricted_post_types() {
+		return $this->queried_restricted_post_types;
+	}
 }

@@ -35,6 +35,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		$instance->post_types        = trc_Core_Plugin::instance()->post_types;
 		$instance->queries           = trc_Core_Queries::instance();
 		$instance->query_scrutinizer = trc_Core_QueryScrutinizer::instance();
+		$instance->query_marshal     = trc_Core_QueryMarshal::instance();
 
 		return $instance;
 	}
@@ -53,6 +54,8 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		if ( ! $this->should_restrict_query( $query ) ) {
 			return;
 		}
+
+		$this->stop_filtering();
 
 		$this->restrict_query( $query );
 	}
@@ -136,4 +139,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 		$this->query_marshal = $query_marshal;
 	}
 
+	public function stop_filtering() {
+		remove_action( 'pre_get_posts', array( $this, 'maybe_restrict_query' ), 10 );
+	}
 }

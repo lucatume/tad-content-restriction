@@ -32,12 +32,9 @@ interface trc_Core_QueryRestrictorInterface {
 	public function set_taxonomies( trc_Core_RestrictingTaxonomiesInterface $taxonomies );
 
 	/**
-	 * @param trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy
-	 */
-	public function set_filtering_taxonomy_generator( trc_Core_FilteringTaxQueryGeneratorInterface $filtering_taxonomy );
-
-	/**
 	 * @param trc_Core_QueriesInterface $queries
 	 */
 	public function set_queries( trc_Core_QueriesInterface $queries );
+
+	public function stop_filtering();
 }

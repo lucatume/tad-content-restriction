@@ -47,11 +47,8 @@ class trc_Core_RestrictingTaxonomies implements trc_Core_RestrictingTaxonomiesIn
 	 *
 	 * @return array
 	 */
-	protected function get_taxonomies_for_post_types( $post_types ) {
-		$taxonomies = array();
-		foreach ( $post_types as $post_type ) {
-			$taxonomies = array_merge( $taxonomies, get_taxonomies( array( 'object_type' => array( $post_type ) ) ) );
-		}
+	protected function get_taxonomies_for_post_types( array $post_types ) {
+		$taxonomies = array_keys( get_taxonomies( array( 'object_type' => $post_types ) ) );
 		$taxonomies = array_intersect( $this->taxonomies, array_unique( $taxonomies ) );
 
 		return $taxonomies;

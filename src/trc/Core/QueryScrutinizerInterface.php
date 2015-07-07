@@ -32,4 +32,6 @@ interface trc_Core_QueryScrutinizerInterface {
 
 
 	public function is_querying_restricted_post_types();
+
+	public function get_queried_restricted_post_types();
 }
