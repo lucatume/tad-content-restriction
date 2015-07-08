@@ -13,7 +13,7 @@ include 'vendor/autoload_52.php';
 
 if ( ! function_exists( 'trc_load' ) ) {
 	function trc_load() {
-		$plugin = trc_Plugin::instance();
+		$plugin = trc_Core_Plugin::instance();
 
 		$plugin->file = __FILE__;
 		$plugin->url  = plugins_url( '/', __FILE__ );
