@@ -106,7 +106,7 @@ class trc_Core_QueryScrutinizer implements trc_Core_QueryScrutinizerInterface {
 			return $this;
 		}
 
-		$queried_post_types = $this->query->get( 'post_type' );
+		$queried_post_types = $this->query->get( 'post_type', 'post' );
 
 		if ( empty( $queried_post_types ) ) {
 			$this->queried_post_types = array();

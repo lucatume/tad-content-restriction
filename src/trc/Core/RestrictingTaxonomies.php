@@ -48,12 +48,16 @@ class trc_Core_RestrictingTaxonomies implements trc_Core_RestrictingTaxonomiesIn
 	 * @return array
 	 */
 	protected function get_taxonomies_for_post_types( array $post_types ) {
+		global $wp_taxonomies;
 		$taxonomies = array();
-		foreach ( $post_types as $post_type ) {
-			$taxonomies = array_merge( $taxonomies, array_keys( get_taxonomies( array( 'object_type' => array( $post_type ) ) ) ) );
-		}
-		$taxonomies = array_intersect( $this->taxonomies, array_unique( $taxonomies ) );
 
-		return $taxonomies;
+		foreach ( $wp_taxonomies as $taxonomy ) {
+			if ( empty( array_intersect( $post_types, $taxonomy->object_type ) ) ) {
+				continue;
+			}
+			$taxonomies[] = $taxonomy->name;
+		}
+
+		return array_intersect( $this->taxonomies, $taxonomies );
 	}
 }

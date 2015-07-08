@@ -66,7 +66,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 * @return bool
 	 */
 	public function should_restrict_query( WP_Query &$query ) {
-		if ( empty( $this->taxonomies->get_restricting_taxonomies_for( $query->get( 'post_type' ) ) ) ) {
+		if ( empty( $this->taxonomies->get_restricting_taxonomies_for( $query->get( 'post_type', array( 'post' ) ) ) ) ) {
 			return false;
 		}
 
@@ -78,7 +78,7 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 			return false;
 		}
 
-		if ( ! $this->post_types->is_restricted_post_type( $query->get( 'post_type' ) ) ) {
+		if ( ! $this->post_types->is_restricted_post_type( $query->get( 'post_type', 'post' ) ) ) {
 			return false;
 		}
 
