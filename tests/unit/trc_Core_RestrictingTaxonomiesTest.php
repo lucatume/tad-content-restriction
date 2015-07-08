@@ -33,38 +33,11 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 		$sut = trc_Core_RestrictingTaxonomies::instance();
 
 		$sut->add( 'foo' );
-		Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
+
+		global $wp_taxonomies;
+		$wp_taxonomies = array( (object) [ 'name' => 'foo', 'object_type' => [ 'post' ] ] );
 
 		Test::assertEquals( [ 'foo' ], $sut->get_restricting_taxonomies_for( 'post' ) );
-	}
-
-	/**
-	 * @test
-	 * it should query the taxonomies for the object types
-	 */
-	public function it_should_query_the_taxonomies_for_the_object_types() {
-		$sut = trc_Core_RestrictingTaxonomies::instance();
-
-		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
-
-		$sut->get_restricting_taxonomies_for( 'post' );
-
-		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'post' ] ] ] );
-	}
-
-	/**
-	 * @test
-	 * it should query the taxonomies for multiple object types
-	 */
-	public function it_should_query_the_taxonomies_for_multiple_object_types() {
-		$sut = trc_Core_RestrictingTaxonomies::instance();
-
-		$get_taxonomies = Test::replace( 'get_taxonomies', [ 'foo' => 23 ] );
-
-		$sut->get_restricting_taxonomies_for( [ 'post', 'page' ] );
-
-		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'post' ] ] ] );
-		$get_taxonomies->wasCalledWithOnce( [ [ 'object_type' => [ 'page' ] ] ] );
 	}
 
 	/**
@@ -74,9 +47,10 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_return_empty_array_if_no_taxonomies_registered_for_post_type() {
 		$sut = trc_Core_RestrictingTaxonomies::instance();
 
-		Test::replace( 'get_taxonomies', [ ] );
+		global $wp_taxonomies;
+		$wp_taxonomies = array();
 
-		$taxonomies = $sut->get_restricting_taxonomies_for( [ 'post' => 23 ] );
+		$taxonomies = $sut->get_restricting_taxonomies_for( [ 'post' ] );
 
 		Test::assertEmpty( $taxonomies );
 	}
@@ -88,7 +62,8 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_filtering_the_taxonomies_adding_them() {
 		$sut = trc_Core_RestrictingTaxonomies::instance();
 
-		Test::replace( 'get_taxonomies', [ 'tax_a' => 23, 'tax_b' => 23 ] );
+		global $wp_taxonomies;
+		$wp_taxonomies = array();
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
@@ -105,7 +80,12 @@ class trc_Core_RestrictingTaxonomiesTest extends \PHPUnit_Framework_TestCase {
 	public function it_should_allow_filtering_the_taxonomies_removing_them() {
 		$sut = trc_Core_RestrictingTaxonomies::instance();
 
-		Test::replace( 'get_taxonomies', [ 'tax_a' => 23, 'tax_b' => 23, 'tax_c' => 23 ] );
+		global $wp_taxonomies;
+		$wp_taxonomies = [
+			(object) [ 'name' => 'foo', 'object_type' => [ 'post' ] ],
+			(object) [ 'name' => 'baz', 'object_type' => [ 'post' ] ],
+			(object) [ 'name' => 'bar', 'object_type' => [ 'post' ] ]
+		];
 
 		Test::replace( 'apply_filters', function ( $tag, $val ) {
 
