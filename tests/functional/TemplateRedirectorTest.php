@@ -34,7 +34,7 @@ class TemplateRedirectorTest extends \WP_UnitTestCase {
 	 * it should be able to redirect user that has no access to post
 	 */
 	public function it_should_be_able_to_redirect_user_that_has_no_access_to_post() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$post = $this->factory->post->create_and_get();
 
@@ -66,7 +66,7 @@ class TemplateRedirectorTest extends \WP_UnitTestCase {
 	 * it should allow restricting access to custom post types templates
 	 */
 	public function it_should_allow_restricting_access_to_custom_post_types_templates() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$post = $this->factory->post->create_and_get( [ 'post_type' => 'notice' ] );
 

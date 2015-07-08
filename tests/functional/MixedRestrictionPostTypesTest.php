@@ -33,7 +33,7 @@ class MixedRestrictionPostTypesTest extends \WP_UnitTestCase {
 	 * it should allow querying restricted and unrestricted post types
 	 */
 	public function it_should_allow_querying_restricted_and_unrestricted_post_types() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$restricted_accessible   = $this->factory->post->create_many( 10, [ 'post_type' => 'post_type_1' ] );
 		$restricted_unaccessible = $this->factory->post->create_many( 10, [ 'post_type' => 'post_type_1' ] );

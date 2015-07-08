@@ -39,7 +39,7 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 	 * it should restrict queries with one restriction taxonomy
 	 */
 	public function it_should_restrict_queries_with_one_restriction_taxonomy() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$accessible_id   = $this->factory->post->create();
 		$unaccessible_id = $this->factory->post->create();
@@ -70,7 +70,7 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 	 * it should restrict queries with two restriction taxonomies
 	 */
 	public function it_should_restrict_queries_with_two_restriction_taxonomies() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$accessible_id   = $this->factory->post->create();
 		$unaccessible_id = $this->factory->post->create();
@@ -114,7 +114,7 @@ class QueryRestrictorTest extends \WP_UnitTestCase {
 	 * it should allow restricting access to custom post types
 	 */
 	public function it_should_allow_restricting_access_to_custom_post_types() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$accessible   = $this->factory->post->create_and_get( [ 'post_type' => 'post_type_1' ] );
 		$unaccessible = $this->factory->post->create_and_get( [ 'post_type' => 'post_type_1' ] );

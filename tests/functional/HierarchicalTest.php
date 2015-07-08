@@ -32,7 +32,7 @@ class HierarchicalTest extends \WP_UnitTestCase {
 	 * it should respect hierarchical taxonomies when restricting
 	 */
 	public function it_should_respect_hierarchical_taxonomies_when_restricting() {
-		activate_plugin( 'tad-content-restriction/tad-content-restriction.php' );
+		activate_plugin( 'tad-restricted-content/tad-restricted-content.php' );
 
 		$tax = 'tax_1';
 		register_taxonomy( $tax, [ 'post_type_1' ], [ 'hierarchical' => true ] );
