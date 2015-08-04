@@ -14,11 +14,16 @@
     {
       "type": "git",
       "url": "https://github.com/lucatume/wp-browser.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/lucatume/tad-reschedule.git"
     }
   ],
   "require": {
     "composer/installers": "~1.0",
-    "xrstf/composer-php52": "1.*"
+    "xrstf/composer-php52": "1.*",
+    "lucatume/tad-reschedule": "~1.0"
   },
   "require-dev": {
     "lucatume/wp-browser": "dev-master",
