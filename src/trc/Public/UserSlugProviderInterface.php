@@ -14,9 +14,9 @@ interface trc_Public_UserSlugProviderInterface {
 	public function get_user_slugs();
 
 	/**
-	 * @param WP_Post $post The post object that is being updated.
+	 * @param WP_Post|string $post The post object that is being updated or a post type.
 	 *
 	 * @return array An array of default term slugs that should be applied to each new post.
 	 */
-	public function get_default_post_terms(WP_Post $post);
+	public function get_default_post_terms( $post = null );
 }

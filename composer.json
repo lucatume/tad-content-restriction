@@ -1,5 +1,5 @@
 {
-  "name": "lucatume/tad-conntent-restriction",
+  "name": "lucatume/tad-restricted-content",
   "type": "wordpress-plugin",
   "description": "A WordPress content restriction framework",
   "license": "GPL 2.0",
@@ -24,6 +24,13 @@
     "composer/installers": "~1.0",
     "xrstf/composer-php52": "1.*",
     "lucatume/tad-reschedule": "~1.0"
+  },
+  "extra": {
+    "installer-paths": {
+      "vendor/{$vendor}/{$name}": [
+        "lucatume/tad-reschedule"
+      ]
+    }
   },
   "require-dev": {
     "lucatume/wp-browser": "dev-master",

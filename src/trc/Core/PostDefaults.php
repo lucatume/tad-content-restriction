@@ -56,4 +56,58 @@ class trc_Core_PostDefaults {
 			wp_set_object_terms( $post_id, $slug_provider->get_default_post_terms( $post ), $taxonomy, true );
 		}
 	}
+
+	public function fetch_posts_with_no_default_restriction( $post_type = 'post', $taxonomy = null ) {
+		$single_return = false;
+		if ( is_array( $taxonomy ) ) {
+			$taxonomies = $taxonomy;
+		} else if ( empty( $taxonomy ) ) {
+			$taxonomies = get_object_taxonomies( $post_type );
+		} else {
+			$single_return = true;
+			$taxonomies    = array( $taxonomy );
+		}
+
+		$transient    = "all_{$post_type}_posts";
+		$all_post_ids = get_transient( $transient );
+		if ( ! $all_post_ids ) {
+			$all_post_ids = get_posts( array(
+				'post_type'       => $post_type,
+				'post_status'     => 'any',
+				'fields'          => 'ids',
+				'supress_filters' => true,
+				'nopaging'        => true,
+			) );
+			set_transient( $transient, $all_post_ids );
+		}
+
+		foreach ( $taxonomies as $tax ) {
+			if ( empty( $this->user_slug_providers[ $tax ] ) ) {
+				$unrestricted[ $tax ] = array();
+				continue;
+			}
+			$slug_provider = $this->user_slug_providers[ $tax ];
+			if ( empty( $slug_provider->get_default_post_terms( $post_type ) ) ) {
+				$unrestricted[ $tax ] = array();
+				continue;
+			}
+			$restricted_ids       = get_posts( array(
+				'post_type'       => $post_type,
+				'post_status'     => 'any',
+				'fields'          => 'ids',
+				'supress_filters' => true,
+				'nopaging'        => true,
+				'tax_query'       => [
+					[
+						'taxonomy' => $tax,
+						'operator' => 'EXISTS'
+					]
+				]
+			) );
+			$unrestricted[ $tax ] = array_diff( $all_post_ids, $restricted_ids );
+		}
+
+		return $single_return ? array_pop( $unrestricted ) : $unrestricted;
+	}
+
 }

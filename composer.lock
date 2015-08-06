@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "480083361a6e843d3ce6d1f792219821",
+    "hash": "d1ac2989866d60d74b0ef5a9b50d0733",
     "packages": [
         {
             "name": "composer/installers",
@@ -103,13 +103,14 @@
         },
         {
             "name": "lucatume/tad-reschedule",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/tad-reschedule.git",
-                "reference": "b6f0005006ac52370fb0a99bc0889e2bd7f7a12a"
+                "reference": "310c461e26ec5c685f15e8d8244d7aa365e66d69"
             },
             "require": {
+                "composer/installers": "~1.0",
                 "xrstf/composer-php52": "1.*"
             },
             "require-dev": {
@@ -143,7 +144,7 @@
                 }
             ],
             "description": "Easy cron event rescheduling in WordPress",
-            "time": "2015-08-03 20:05:25"
+            "time": "2015-08-06 14:12:23"
         },
         {
             "name": "xrstf/composer-php52",
@@ -1754,12 +1755,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "a651989dc0ee7cb4fc850bfe4a8d981a348178aa"
+                "reference": "eb0fcf6f58054ac9d07539451e27aa4e17aebfe0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/a651989dc0ee7cb4fc850bfe4a8d981a348178aa",
-                "reference": "a651989dc0ee7cb4fc850bfe4a8d981a348178aa",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/eb0fcf6f58054ac9d07539451e27aa4e17aebfe0",
+                "reference": "eb0fcf6f58054ac9d07539451e27aa4e17aebfe0",
                 "shasum": ""
             },
             "require": {
@@ -1803,7 +1804,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2015-08-01 11:59:20"
+            "time": "2015-08-04 15:59:05"
         },
         {
             "name": "symfony/css-selector",

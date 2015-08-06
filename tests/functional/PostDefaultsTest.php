@@ -244,4 +244,99 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 		}
 	}
 
+	/**
+	 * @test
+	 * it should fetch not restricted post types
+	 */
+	public function it_should_fetch_not_restricted_post_types() {
+		register_taxonomy( 'tax_1', 'post' );
+		wp_insert_term( 'term_1', 'tax_1', [ 'slug' => 'term_1' ] );
+
+		$this->factory->post->create_many( 10 );
+
+		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
+		                          ->method( 'get_default_post_terms', [ 'term_1' ] )->get();
+		$this->sut->set_user_slug_provider_for( 'tax_1', $user_slug_provider );
+
+		$ids = $this->sut->fetch_posts_with_no_default_restriction( 'post', 'tax_1' );
+
+		Test::assertCount( 10, $ids );
+	}
+
+	/**
+	 * @test
+	 * it should return posts without terms only
+	 */
+	public function it_should_return_posts_without_terms_only() {
+		register_taxonomy( 'tax_1', 'post' );
+		wp_insert_term( 'term_1', 'tax_1', [ 'slug' => 'term_1' ] );
+
+		$this->factory->post->create_many( 5 );
+		$posts = $this->factory->post->create_many( 5 );
+		for ( $i = 0; $i < 5; $i ++ ) {
+			wp_set_object_terms( $posts[ $i ], 'term_1', 'tax_1', false );
+		}
+
+		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
+		                          ->method( 'get_default_post_terms', [ 'term_1' ] )->get();
+		$this->sut->set_user_slug_provider_for( 'tax_1', $user_slug_provider );
+
+		$ids = $this->sut->fetch_posts_with_no_default_restriction( 'post', 'tax_1' );
+
+		Test::assertCount( 5, $ids );
+	}
+
+	/**
+	 * @test
+	 * it should return empty array if all posts have restriction applied
+	 */
+	public function it_should_return_empty_array_if_all_posts_have_restriction_applied() {
+		register_taxonomy( 'tax_1', 'post' );
+		wp_insert_term( 'term_1', 'tax_1', [ 'slug' => 'term_1' ] );
+
+		$posts = $this->factory->post->create_many( 10 );
+		for ( $i = 0; $i < 10; $i ++ ) {
+			wp_set_object_terms( $posts[ $i ], 'term_1', 'tax_1', false );
+		}
+
+		$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
+		                          ->method( 'get_default_post_terms', [ 'term_1' ] )->get();
+		$this->sut->set_user_slug_provider_for( 'tax_1', $user_slug_provider );
+
+		$ids = $this->sut->fetch_posts_with_no_default_restriction( 'post', 'tax_1' );
+
+		Test::assertCount( 0, $ids );
+	}
+
+	/**
+	 * @test
+	 * it should retrieve posts in tax key/value array when tax not specified
+	 */
+	public function it_should_retrieve_posts_in_tax_key_value_array_when_tax_not_specified() {
+		register_taxonomy( 'tax_1', 'post' );
+		register_taxonomy( 'tax_2', 'post' );
+		wp_insert_term( 'term_1', 'tax_1', [ 'slug' => 'term_1' ] );
+		wp_insert_term( 'term_2', 'tax_2', [ 'slug' => 'term_2' ] );
+
+		$posts = $this->factory->post->create_many( 10 );
+		for ( $i = 0; $i < 5; $i ++ ) {
+			wp_set_object_terms( $posts[ $i ], 'term_1', 'tax_1', false );
+		}
+		for ( $i = 0; $i < 5; $i ++ ) {
+			wp_set_object_terms( $posts[ $i ], 'term_2', 'tax_2', false );
+		}
+		$restricted = array_splice( $posts, 0, 5 );
+
+		$user_slug_provider_1 = Test::replace( 'trc_Public_UserSlugProviderInterface' )
+		                            ->method( 'get_default_post_terms', [ 'term_1' ] )->get();
+		$this->sut->set_user_slug_provider_for( 'tax_1', $user_slug_provider_1 );
+		$user_slug_provider_2 = Test::replace( 'trc_Public_UserSlugProviderInterface' )
+		                            ->method( 'get_default_post_terms', [ 'term_2' ] )->get();
+		$this->sut->set_user_slug_provider_for( 'tax_2', $user_slug_provider_2 );
+
+		$ids = $this->sut->fetch_posts_with_no_default_restriction( 'post' );
+
+		Test::assertEquals( $posts, $ids['tax_1'] );
+		Test::assertEquals( $posts, $ids['tax_2'] );
+	}
 }
