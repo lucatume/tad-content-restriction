@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d1ac2989866d60d74b0ef5a9b50d0733",
+    "hash": "03dab1134e48beb494e356c0b34d6f0b",
     "packages": [
         {
             "name": "composer/installers",
@@ -103,11 +103,11 @@
         },
         {
             "name": "lucatume/tad-reschedule",
-            "version": "1.0.3",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/tad-reschedule.git",
-                "reference": "310c461e26ec5c685f15e8d8244d7aa365e66d69"
+                "reference": "5ffe6a1a132c5218d51a8b80e80854c3993bfa18"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -144,7 +144,7 @@
                 }
             ],
             "description": "Easy cron event rescheduling in WordPress",
-            "time": "2015-08-06 14:12:23"
+            "time": "2015-08-07 14:35:44"
         },
         {
             "name": "xrstf/composer-php52",

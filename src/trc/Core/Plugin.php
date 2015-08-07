@@ -58,6 +58,16 @@ class trc_Core_Plugin {
 	 */
 	public $post_types;
 
+	/**
+	 * @var trc_Core_Scheduler
+	 */
+	public $worker;
+
+	/**
+	 * @var array An array of key/value sets to avoid global constants
+	 */
+	protected $register = array();
+
 	public static function instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
@@ -65,10 +75,16 @@ class trc_Core_Plugin {
 			self::$instance->taxonomies          = trc_Core_RestrictingTaxonomies::instance();
 			self::$instance->user                = trc_Core_User::instance();
 			self::$instance->post_types          = trc_Core_PostTypes::instance();
-			self::$instance->query_vars          = trc_Core_QueryVars::instance()->init();
-			self::$instance->admin_page          = trc_UI_AdminPage::instance()->init();
-			self::$instance->template_redirector = trc_Core_TemplateRedirector::instance()->init();
-			self::$instance->query_restrictor    = trc_Core_QueryRestrictor::instance()->init();
+			self::$instance->query_vars          = trc_Core_QueryVars::instance()
+			                                                         ->init();
+			self::$instance->admin_page          = trc_UI_AdminPage::instance()
+			                                                       ->init();
+			self::$instance->template_redirector = trc_Core_TemplateRedirector::instance()
+			                                                                  ->init();
+			self::$instance->query_restrictor    = trc_Core_QueryRestrictor::instance()
+			                                                               ->init();
+			self::$instance->worker              = trc_Core_Scheduler::instance()
+			                                                         ->schedule();
 		}
 
 		return self::$instance;
@@ -82,5 +98,13 @@ class trc_Core_Plugin {
 		$this->$key = $value;
 
 		return $this;
+	}
+
+	public function get( $key ) {
+		empty( $this->register[ $key ] ) ? '' : $this->register[ $key ];
+	}
+
+	public function set( $key, $value ) {
+		$this->register[ $key ] = $value;
 	}
 }
