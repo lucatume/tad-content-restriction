@@ -21,9 +21,11 @@ class trc_Core_Scheduler {
 
 	public function schedule() {
 		// each 2' apply the default restrictions to some unrestricted posts
+		$post_defaults = trc_Core_PostDefaults::instance();
 		tad_reschedule( 'trc/core/unrestricted_posts/check' )
 			->each( 120 )
-			->until( array( trc_Core_PostDefaults::instance(), 'has_unrestricted_posts' ) );
+			->until( array( $post_defaults, 'has_unrestricted_posts' ) )
+			->with_args( $post_defaults->get_unrestricted_posts() );
 	}
 
 }

@@ -28,27 +28,10 @@ class trc_Core_PostDefaults {
 	public function has_unrestricted_posts() {
 		$taxonomies = array_keys( $this->user_slug_providers );
 		foreach ( $taxonomies as $tax ) {
-			$tax_object    = get_taxonomy( $tax );
-			$post_types    = $tax_object->object_type;
-			$slug_provider = $this->user_slug_providers[ $tax ];
-
-			if ( empty( $slug_provider->get_default_post_terms() ) ) {
-				continue;
-			}
+			$post_types = $this->get_restricted_post_types_for_taxonomy( $tax );
 
 			foreach ( $post_types as $post_type ) {
-				$unrestricted_posts = get_posts( array(
-					'fields'           => 'ids',
-					'nopaging'         => true,
-					'suppress_filters' => true,
-					'post_type'        => $post_type,
-					'tax_query'        => array(
-						array(
-							'taxonomy' => $tax,
-							'operator' => 'NOT EXISTS'
-						)
-					)
-				) );
+				$unrestricted_posts = $this->get_unrestricted_for_taxonomy( $post_type, $tax );
 
 				if ( count( $unrestricted_posts ) ) {
 					return true;
@@ -57,6 +40,58 @@ class trc_Core_PostDefaults {
 		}
 
 		return false;
+	}
+
+	public function get_unrestricted_posts() {
+		$taxonomies = array_keys( $this->user_slug_providers );
+		$posts      = array();
+		foreach ( $taxonomies as $tax ) {
+			$post_types = $this->get_restricted_post_types_for_taxonomy( $tax );
+
+			foreach ( $post_types as $post_type ) {
+				$unrestricted_posts = $this->get_unrestricted_for_taxonomy( $post_type, $tax );
+
+				if ( count( $unrestricted_posts ) ) {
+					$posts[ $tax ] = $unrestricted_posts;
+				}
+			}
+		}
+
+		return $posts;
+	}
+
+	protected function get_unrestricted_for_taxonomy( $post_type, $taxonomy ) {
+		$unrestricted_posts = get_posts( array(
+			'fields'           => 'ids',
+			'nopaging'         => true,
+			'suppress_filters' => true,
+			'post_type'        => $post_type,
+			'tax_query'        => array(
+				array(
+					'taxonomy' => $taxonomy,
+					'operator' => 'NOT EXISTS'
+				)
+			)
+		) );
+
+		return $unrestricted_posts;
+	}
+
+	/**
+	 * @param $taxonomy
+	 *
+	 * @return array
+	 */
+	protected function get_restricted_post_types_for_taxonomy( $taxonomy ) {
+		$tax_object = get_taxonomy( $taxonomy );
+		$post_types = $tax_object->object_type;
+
+		$slug_provider = $this->user_slug_providers[ $taxonomy ];
+		if ( empty( $slug_provider->get_default_post_terms() ) ) {
+			return [ ];
+		}
+
+		return array( $post_types );
 	}
 
 
