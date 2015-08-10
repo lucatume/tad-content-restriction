@@ -362,12 +362,25 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * it should return up to a finite amount of unrestricted post IDs
 	 */
 	public function it_should_return_up_to_a_finite_amount_of_unrestricted_post_i_ds() {
-		$this->markTestIncomplete();
 		$post_types = [
-			'post_type_1' => [ 'tax_1' => 'term_1' ],
-			'post_type_2' => [ 'tax_2' => 'term_2' ]
+			'post_type_1' => [ 'tax_1' => [ 'term_1' ] ],
+			'post_type_2' => [ 'tax_2' => [ 'term_2' ] ]
 		];
+
 		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( 6 );
+
+		Test::assertCount( 2, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayHasKey( 'tax_2', $out );
+		Test::assertCount( 5, $out['tax_1'] );
+		Test::assertCount( 1, $out['tax_2'] );
 	}
 
 	/**

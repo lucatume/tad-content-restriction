@@ -42,7 +42,11 @@ class trc_Core_PostDefaults {
 		return false;
 	}
 
-	public function get_unrestricted_posts() {
+	public function get_unrestricted_posts( $limit = false ) {
+		if ( ! ( empty( $limit ) || is_numeric( $limit ) || is_bool( $limit ) ) ) {
+			throw new InvalidArgumentException( 'Limit parameter must be an int, a bool or null.' );
+		}
+
 		$taxonomies = array_keys( $this->user_slug_providers );
 		$posts      = array();
 		foreach ( $taxonomies as $tax ) {
@@ -55,6 +59,24 @@ class trc_Core_PostDefaults {
 					$posts[ $tax ] = $unrestricted_posts;
 				}
 			}
+		}
+
+		if ( ! empty( $posts ) && $limit && intval( $limit ) > 0 ) {
+			$_limit = intval( $limit );
+			$_posts = [ ];
+			foreach ( $posts as $taxonomy => $ids ) {
+				$count = count( $ids );
+				if ( $count <= $_limit ) {
+					$_limit -= $count;
+					$_posts[ $taxonomy ] = $ids;
+				} else {
+					$_ids                = array_values( array_splice( $ids, 0, $_limit ) );
+					$_posts[ $taxonomy ] = $_ids;
+					break;
+				}
+			}
+
+			$posts = $_posts;
 		}
 
 		return $posts;
