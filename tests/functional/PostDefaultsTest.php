@@ -44,16 +44,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @dataProvider taxonomiesProvider
 	 */
 	public function it_should_asssert_if_there_are_posts_with_no_default_restriction_applied( $taxonomies ) {
-		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, 'post' );
-			foreach ( $terms as $t ) {
-				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
-			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-		}
+		$this->register_tax_terms_for_post_type( $taxonomies, 'post' );
 
 		$posts = $this->factory->post->create_many( 10 );
 
@@ -66,16 +57,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @dataProvider taxonomiesProvider
 	 */
 	public function it_should_assert_there_are_no_unrestricted_posts( $taxonomies ) {
-		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, 'post' );
-			foreach ( $terms as $t ) {
-				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
-			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-		}
+		$this->register_tax_terms_for_post_type( $taxonomies, 'post' );
 
 		$posts = $this->factory->post->create_many( 5 );
 
@@ -103,16 +85,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @dataProvider emptyTaxonomies
 	 */
 	public function it_should_assert_there_are_no_unrestricted_posts_when_taxonomies_do_not_have_default_term( $taxonomies ) {
-		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, 'post' );
-			foreach ( $terms as $t ) {
-				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
-			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-		}
+		$this->register_tax_terms_for_post_type( $taxonomies, 'post' );
 
 		$posts = $this->factory->post->create_many( 5 );
 
@@ -140,16 +113,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @dataProvider mixedTaxonomies
 	 */
 	public function it_should_assert_there_are_unrestricted_posts_in_has_and_has_not_default_term_scenario( $taxonomies ) {
-		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, 'post' );
-			foreach ( $terms as $t ) {
-				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
-			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-		}
+		$this->register_tax_terms_for_post_type( $taxonomies, 'post' );
 
 		$posts = $this->factory->post->create_many( 10 );
 
@@ -162,16 +126,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @dataProvider mixedTaxonomies
 	 */
 	public function it_should_assert_there_are_not_unrestricted_posts_in_has_and_has_not_default_term_scenario( $taxonomies ) {
-		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, 'post' );
-			foreach ( $terms as $t ) {
-				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
-			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-		}
+		$this->register_tax_terms_for_post_type( $taxonomies, 'post' );
 
 		$posts = $this->factory->post->create_many( 5 );
 
@@ -256,47 +211,48 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @dataProvider postTypesAndTaxonomies
 	 */
 	public function it_should_assert_unrestricted_posts_in_multiple_post_tax_scenarios( $post_types, $has ) {
-		foreach ( $post_types as $pt => $taxonomies ) {
-			register_post_type( $pt );
-			foreach ( $taxonomies as $tax => $terms ) {
-				register_taxonomy( $tax, [ ] );
-				register_taxonomy_for_object_type( $tax, $pt );
-				foreach ( $terms as $t ) {
-					wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-				}
-				$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-				                          ->method( 'get_default_post_terms', $terms )
-				                          ->get();
-				$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-			}
+		$this->register_post_types_tax_terms( $post_types );
 
-			$this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$this->factory->post->create_many( 3, [ 'post_type' => $pt ] );
 		}
 
 		Test::assertEquals( $has, $this->sut->has_unrestricted_posts() );
 	}
 
-//* it should return an array of existing post IDs
-//* it should return up to a finite amount of existing post IDs, say 100, that's safe to process without clogging the server
-//* it should return an empty array if there are no posts that require a default restriction
-//* it should take an optional parameter, `post_type`, to return post IDs of that type only
 	public function unrestrictedPostCombos() {
 		return [
-			[ [  ], 'post', 5 ],
-			[ [ 'tax_1' => [ ], 'tax_2' => [  ] ], 'post', 5 ],
-			[ [ 'tax_1' => ['term_11' ], 'tax_2' => [  ] ], 'post', 5 ],
-			[ [ 'tax_1' => ['term_11','term_12' ], 'tax_2' => ['term_21'  ] ], 'post', 5 ],
-			[ [ 'tax_1' => ['term_11','term_12' ], 'tax_2' => ['term_21','term_22'  ] ], 'post', 5 ],
-			[ [ 'tax_1' => ['term_11','term_12' ], 'tax_2' => ['term_21','term_23'  ],'tax_3' => ['term_31','term_33'  ] ], 'post', 5 ],
-			[ [ 'tax_1' => [], 'tax_2' => [],'tax_3' => ['term_31','term_33'  ] ], 'post', 5 ],
+			[ [ ], 'post', 5 ],
+			[ [ 'tax_1' => [ ], 'tax_2' => [ ] ], 'post', 5 ],
+			[ [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ ] ], 'post', 5 ],
+			[ [ 'tax_1' => [ 'term_11', 'term_12' ], 'tax_2' => [ 'term_21' ] ], 'post', 5 ],
+			[ [ 'tax_1' => [ 'term_11', 'term_12' ], 'tax_2' => [ 'term_21', 'term_22' ] ], 'post', 5 ],
+			[
+				[
+					'tax_1' => [ 'term_11', 'term_12' ],
+					'tax_2' => [ 'term_21', 'term_23' ],
+					'tax_3' => [ 'term_31', 'term_33' ]
+				],
+				'post',
+				5
+			],
+			[ [ 'tax_1' => [ ], 'tax_2' => [ ], 'tax_3' => [ 'term_31', 'term_33' ] ], 'post', 5 ],
 			[ [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ 'term_21' ] ], 'post', 5 ],
-			[ [  ], 'post', 0 ],
-			[ [ 'tax_1' => [ ], 'tax_2' => [  ] ], 'post', 0 ],
-			[ [ 'tax_1' => ['term_11' ], 'tax_2' => [  ] ], 'post', 0 ],
-			[ [ 'tax_1' => ['term_11','term_12' ], 'tax_2' => ['term_21'  ] ], 'post', 0 ],
-			[ [ 'tax_1' => ['term_11','term_12' ], 'tax_2' => ['term_21','term_22'  ] ], 'post', 0 ],
-			[ [ 'tax_1' => ['term_11','term_12' ], 'tax_2' => ['term_21','term_23'  ],'tax_3' => ['term_31','term_33'  ] ], 'post', 0 ],
-			[ [ 'tax_1' => [], 'tax_2' => [],'tax_3' => ['term_31','term_33'  ] ], 'post', 0 ],
+			[ [ ], 'post', 0 ],
+			[ [ 'tax_1' => [ ], 'tax_2' => [ ] ], 'post', 0 ],
+			[ [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ ] ], 'post', 0 ],
+			[ [ 'tax_1' => [ 'term_11', 'term_12' ], 'tax_2' => [ 'term_21' ] ], 'post', 0 ],
+			[ [ 'tax_1' => [ 'term_11', 'term_12' ], 'tax_2' => [ 'term_21', 'term_22' ] ], 'post', 0 ],
+			[
+				[
+					'tax_1' => [ 'term_11', 'term_12' ],
+					'tax_2' => [ 'term_21', 'term_23' ],
+					'tax_3' => [ 'term_31', 'term_33' ]
+				],
+				'post',
+				0
+			],
+			[ [ 'tax_1' => [ ], 'tax_2' => [ ], 'tax_3' => [ 'term_31', 'term_33' ] ], 'post', 0 ],
 			[ [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ 'term_21' ] ], 'post', 0 ],
 		];
 	}
@@ -311,17 +267,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 			return ! empty( $terms );
 		} );
 
-		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, [ ] );
-			register_taxonomy_for_object_type( $tax, $post_type );
-			foreach ( $terms as $t ) {
-				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
-			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
-		}
+		$this->register_tax_terms_for_post_type( $taxonomies, $post_type );
 
 		$this->factory->post->create_many( $post_count, [ 'post_type' => $post_type ] );
 
@@ -337,4 +283,121 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 			Test::assertEmpty( $out );
 		}
 	}
+
+	public function postTypeAndRestrictions() {
+		return [
+			[
+				[
+					'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+					'post_type_2' => [ 'tax_2' => [ 'term_21' ] ],
+					'post_type_3' => [ 'tax_3' => [ 'term_31' ] ],
+					'post_type_4' => [ 'tax_4' => [ 'term_41' ] ]
+				]
+			],
+			[
+				[
+					'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+					'post_type_2' => [ 'tax_2' => [ 'term_21' ] ],
+					'post_type_3' => [ 'tax_3' => [ 'term_31' ] ]
+				]
+			],
+			[
+				[
+					'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+					'post_type_2' => [ 'tax_2' => [ 'term_21' ] ],
+					'post_type_3' => [ 'tax_3' => [ ] ],
+				]
+			],
+			[
+				[
+					'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+					'post_type_2' => [ 'tax_2' => [ 'term_21' ] ],
+					'post_type_3' => [ 'tax_3' => [ ] ],
+					'post_type_4' => [ 'tax_4' => [ ] ]
+				]
+			],
+		];
+	}
+
+	/**
+	 * @test
+	 * @dataProvider postTypeAndRestrictions
+	 */
+	public function restrictedAndUnrestrictedPostsTest( $post_types ) {
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		// assign default restriction terms to the first two post types only
+		$restricted_post_types = array_splice( $post_types, 0, 2 );
+		foreach ( $restricted_post_types as $pt => $taxonomies ) {
+			foreach ( $ids[ $pt ] as $post_id ) {
+				foreach ( $taxonomies as $tax => $terms ) {
+					wp_set_object_terms( $post_id, $terms, $tax, false );
+				}
+			}
+		}
+
+		$out = $this->sut->get_unrestricted_posts();
+
+		// spliced before
+		$count = count( $post_types );
+		foreach ( $post_types as $pt => $taxonomies ) {
+			foreach ( $taxonomies as $tax => $terms ) {
+				if ( ! empty( $terms ) ) {
+					Test::assertArrayHasKey( $tax, $out );
+					Test::assertCount( 5, $out[ $tax ] );
+				} else {
+					Test::assertArrayNotHasKey( $tax, $out );
+				}
+			}
+		}
+	}
+//* it should return up to a finite amount of existing post IDs, say 100, that's safe to process without clogging the server
+	/**
+	 * @test
+	 * it should return up to a finite amount of unrestricted post IDs
+	 */
+	public function it_should_return_up_to_a_finite_amount_of_unrestricted_post_i_ds() {
+		$this->markTestIncomplete();
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => 'term_1' ],
+			'post_type_2' => [ 'tax_2' => 'term_2' ]
+		];
+		$this->register_post_types_tax_terms( $post_types );
+	}
+
+	/**
+	 * @param $post_types
+	 *
+	 * @return array
+	 */
+	protected function register_post_types_tax_terms( $post_types ) {
+		foreach ( $post_types as $post_type => $taxonomies ) {
+			$this->register_tax_terms_for_post_type( $taxonomies, $post_type );
+		}
+	}
+
+	/**
+	 * @param $taxonomies
+	 * @param $post_type
+	 */
+	protected function register_tax_terms_for_post_type( $taxonomies, $post_type ) {
+		foreach ( $taxonomies as $tax => $terms ) {
+			register_taxonomy( $tax, $post_type );
+			register_taxonomy_for_object_type( $tax, $post_type );
+			foreach ( $terms as $t ) {
+				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
+			}
+			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
+			                          ->method( 'get_default_post_terms', $terms )
+			                          ->get();
+			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
+		}
+	}
+//* it should return an empty array if there are no posts that require a default restriction
+//* it should take an optional parameter, `post_type`, to return post IDs of that type only
 }
