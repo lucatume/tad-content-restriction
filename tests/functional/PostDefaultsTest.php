@@ -613,6 +613,39 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * @test
+	 * it should allow getting unrestricted posts by mulit post types and taxs
+	 */
+	public function it_should_allow_getting_unrestricted_posts_by_mulit_post_types_and_taxs() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_2' => [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ 'term_21' ] ],
+			'post_type_3' => [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ 'term_21' ] ],
+			'post_type_4' => [ 'tax_2' => [ 'term_21' ] ],
+			'post_type_5' => [ 'tax_2' => [ 'term_11' ] ],
+			'post_type_6' => [ 'tax_2' => [ 'term_21' ] ],
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [
+			'post_type' => [ 'post_type_1', 'post_type_2' ],
+			'taxonomy'  => [ 'tax_1', 'tax_2' ]
+		] );
+
+		Test::assertCount( 2, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayHasKey( 'tax_2', $out );
+		Test::assertCount( 10, $out['tax_1'] );
+		Test::assertCount( 5, $out['tax_2'] );
+	}
+
+	/**
 	 * @param $post_types
 	 *
 	 * @return array
