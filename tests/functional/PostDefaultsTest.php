@@ -17,6 +17,12 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 		// your set up methods here
 		Test::setUp();
 		$this->sut = new trc_Core_PostDefaults();
+		$this->reset_taxonomies();
+	}
+
+	private function reset_taxonomies() {
+		global $wp_taxonomies;
+		$wp_taxonomies = [ ];
 	}
 
 	public function tearDown() {
@@ -435,6 +441,34 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * @test
+	 * it should allow to get all the posts unrestricted by a specific taxonomy
+	 */
+	public function it_should_allow_to_get_all_the_posts_unrestricted_by_a_specific_taxonomy() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_2' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_3' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_4' => [ 'tax_2' => [ 'term_21' ] ],
+			'post_type_5' => [ 'tax_2' => [ 'term_21' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [ 'taxonomy' => 'tax_1' ] );
+
+		Test::assertCount( 1, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayNotHasKey( 'tax_2', $out );
+		Test::assertCount( 15, $out['tax_1'] );
+	}
+
+	/**
 	 * @param $post_types
 	 *
 	 * @return array
@@ -450,9 +484,13 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	 * @param $post_type
 	 */
 	protected function register_tax_terms_for_post_type( $taxonomies, $post_type ) {
+		register_post_type( $post_type );
 		foreach ( $taxonomies as $tax => $terms ) {
-			register_taxonomy( $tax, $post_type );
-			register_taxonomy_for_object_type( $tax, $post_type );
+			if ( ! get_taxonomy( $tax ) ) {
+				register_taxonomy( $tax, $post_type );
+			} else {
+				register_taxonomy_for_object_type( $tax, $post_type );
+			}
 			foreach ( $terms as $t ) {
 				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
 			}

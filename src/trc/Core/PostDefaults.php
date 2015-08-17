@@ -53,6 +53,14 @@ class trc_Core_PostDefaults {
 			throw new InvalidArgumentException( 'Post type parameter must be a string or false.' );
 		}
 
+		$wanted_taxonomies = false;
+		if ( isset( $args['taxonomy'] ) ) {
+			if ( ! ( is_string( $args['taxonomy'] ) || is_array( $args['taxonomy'] ) ) ) {
+				throw new InvalidArgumentException( 'Taxonomy must be a string, an array of strings or null.' );
+			}
+			$wanted_taxonomies = is_array( $args['taxonomy'] ) ? $args['taxonomy'] : array( $args['taxonomy'] );
+		}
+
 		$wanted_post_types = false;
 		if ( $args['post_type'] ) {
 			$wanted_post_types = is_array( $args['post_type'] ) ? $args['post_type'] : array( $args['post_type'] );
@@ -62,7 +70,9 @@ class trc_Core_PostDefaults {
 
 		$found_by_post_type = array();
 		$taxonomies         = array_keys( $this->user_slug_providers );
+		$taxonomies         = $wanted_taxonomies ? array_intersect( $taxonomies, $wanted_taxonomies ) : $taxonomies;
 		$posts              = array();
+
 		foreach ( $taxonomies as $tax ) {
 			if ( $has_limit && $limit <= 0 ) {
 				break;
