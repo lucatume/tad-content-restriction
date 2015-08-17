@@ -273,7 +273,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 
 		$out = $this->sut->get_unrestricted_posts();
 
-		if ( $post_count ) {
+		if ( $post_count && ! empty( $taxonomies_w_default_terms ) ) {
 			Test::assertCount( count( $taxonomies_w_default_terms ), $out );
 			foreach ( array_keys( $taxonomies_w_default_terms ) as $tax_name ) {
 				Test::assertArrayHasKey( $tax_name, $out );
@@ -374,13 +374,64 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
 		}
 
-		$out = $this->sut->get_unrestricted_posts( 6 );
+		$out = $this->sut->get_unrestricted_posts( [ 'limit' => 6 ] );
 
 		Test::assertCount( 2, $out );
 		Test::assertArrayHasKey( 'tax_1', $out );
 		Test::assertArrayHasKey( 'tax_2', $out );
 		Test::assertCount( 5, $out['tax_1'] );
 		Test::assertCount( 1, $out['tax_2'] );
+	}
+
+	/**
+	 * @test
+	 * it should return all the post ids if limit is larger than unrestricted
+	 */
+	public function it_should_return_all_the_post_ids_if_limit_is_larger_than_unrestricted() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_1' ] ],
+			'post_type_2' => [ 'tax_2' => [ 'term_2' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [ 'limit' => 20 ] );
+
+		Test::assertCount( 2, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayHasKey( 'tax_2', $out );
+		Test::assertCount( 5, $out['tax_1'] );
+		Test::assertCount( 5, $out['tax_2'] );
+	}
+
+	/**
+	 * @test
+	 * it should allow for the specification of a post type
+	 */
+	public function it_should_allow_for_the_specification_of_a_post_type() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_1' ] ],
+			'post_type_2' => [ 'tax_2' => [ 'term_2' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [ 'post_type' => 'post_type_1' ] );
+
+		Test::assertCount( 1, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayNotHasKey( 'tax_2', $out );
+		Test::assertCount( 5, $out['tax_1'] );
 	}
 
 	/**
@@ -406,11 +457,8 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 				wp_insert_term( $t, $tax, [ 'slug' => $t ] );
 			}
 			$user_slug_provider = Test::replace( 'trc_Public_UserSlugProviderInterface' )
-			                          ->method( 'get_default_post_terms', $terms )
-			                          ->get();
+			                          ->method( 'get_default_post_terms', $terms )->get();
 			$this->sut->set_user_slug_provider_for( $tax, $user_slug_provider );
 		}
 	}
-//* it should return an empty array if there are no posts that require a default restriction
-//* it should take an optional parameter, `post_type`, to return post IDs of that type only
 }

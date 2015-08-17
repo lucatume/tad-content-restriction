@@ -42,27 +42,54 @@ class trc_Core_PostDefaults {
 		return false;
 	}
 
-	public function get_unrestricted_posts( $limit = false ) {
-		if ( ! ( empty( $limit ) || is_numeric( $limit ) || is_bool( $limit ) ) ) {
+	public function get_unrestricted_posts( array $args = null ) {
+		$args = wp_parse_args( $args, array( 'limit' => false, 'post_type' => false ) );
+
+		if ( ! ( empty( $args['limit'] ) || is_numeric( $args['limit'] ) || is_bool( $args['limit'] ) ) ) {
 			throw new InvalidArgumentException( 'Limit parameter must be an int, a bool or null.' );
 		}
 
-		$taxonomies = array_keys( $this->user_slug_providers );
-		$posts      = array();
+		if ( ! ( $args['post_type'] === false || is_string( $args['post_type'] ) ) ) {
+			throw new InvalidArgumentException( 'Post type parameter must be a string or false.' );
+		}
+
+		$wanted_post_types = false;
+		if ( $args['post_type'] ) {
+			$wanted_post_types = is_array( $args['post_type'] ) ? $args['post_type'] : array( $args['post_type'] );
+		}
+
+		$found_by_post_type = array();
+		$taxonomies         = array_keys( $this->user_slug_providers );
+		$posts              = array();
 		foreach ( $taxonomies as $tax ) {
 			$post_types = $this->get_restricted_post_types_for_taxonomy( $tax );
 
+			if ( $wanted_post_types ) {
+				$post_types = array_intersect( $post_types, $wanted_post_types );
+			}
+
+			$found_posts = array();
 			foreach ( $post_types as $post_type ) {
 				$unrestricted_posts = $this->get_unrestricted_for_taxonomy( $post_type, $tax );
 
 				if ( count( $unrestricted_posts ) ) {
-					$posts[ $tax ] = $unrestricted_posts;
+					if ( is_string( $post_type ) ) {
+						if ( isset( $found_by_post_type[ $post_type ] ) ) {
+							$found_by_post_type[ $post_type ] = array_merge( $found_by_post_type[ $post_type ], $unrestricted_posts );
+						} else {
+							$found_by_post_type[ $post_type ] = $unrestricted_posts;
+						}
+					}
+					$found_posts = array_merge( $found_posts, $unrestricted_posts );
 				}
+			}
+			if ( $found_posts ) {
+				$posts[ $tax ] = array_unique( $found_posts );
 			}
 		}
 
-		if ( ! empty( $posts ) && $limit && intval( $limit ) > 0 ) {
-			$_limit = intval( $limit );
+		if ( ! empty( $posts ) && $args['limit'] && intval( $args['limit'] ) > 0 ) {
+			$_limit = intval( $args['limit'] );
 			$_posts = [ ];
 			foreach ( $posts as $taxonomy => $ids ) {
 				$count = count( $ids );
@@ -113,7 +140,7 @@ class trc_Core_PostDefaults {
 			return [ ];
 		}
 
-		return array( $post_types );
+		return is_array( $post_types ) ? $post_types : array( $post_types );
 	}
 
 
