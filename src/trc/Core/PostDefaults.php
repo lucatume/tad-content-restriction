@@ -49,8 +49,8 @@ class trc_Core_PostDefaults {
 			throw new InvalidArgumentException( 'Limit parameter must be an int, a bool or null.' );
 		}
 
-		if ( ! ( $args['post_type'] === false || is_string( $args['post_type'] ) ) ) {
-			throw new InvalidArgumentException( 'Post type parameter must be a string or false.' );
+		if ( ! ( $args['post_type'] === false || is_string( $args['post_type']) || is_array( $args['post_type'] )  ) ) {
+			throw new InvalidArgumentException( 'Post type parameter must be a string, an array of strings or false.' );
 		}
 
 		$wanted_taxonomies = false;

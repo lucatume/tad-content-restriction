@@ -469,6 +469,150 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * @test
+	 * it should allow getting unrestricted by taxonomy with more taxes
+	 */
+	public function it_should_allow_getting_unrestricted_by_taxonomy_with_more_taxes() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ], 'tax_2' => [ 'term_21' ] ],
+			'post_type_2' => [ 'tax_1' => [ 'term_11' ], 'tax_3' => [ 'term_31' ] ],
+			'post_type_3' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_4' => [ 'tax_2' => [ 'term_21' ] ],
+			'post_type_5' => [ 'tax_2' => [ 'term_21' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [ 'taxonomy' => 'tax_3' ] );
+
+		Test::assertCount( 1, $out );
+		Test::assertArrayHasKey( 'tax_3', $out );
+		Test::assertArrayNotHasKey( 'tax_1', $out );
+		Test::assertArrayNotHasKey( 'tax_2', $out );
+		Test::assertCount( 5, $out['tax_3'] );
+	}
+
+	/**
+	 * @test
+	 * it should allow getting unrestricted posts by taxonomy with limit
+	 */
+	public function it_should_allow_getting_unrestricted_posts_by_taxonomy_with_limit() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_2' => [ 'tax_2' => [ 'term_21' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 20, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [ 'taxonomy' => 'tax_1', 'limit' => 10 ] );
+
+		Test::assertCount( 1, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayNotHasKey( 'tax_2', $out );
+		Test::assertCount( 10, $out['tax_1'] );
+	}
+
+	/**
+	 * @test
+	 * it should allow getting by tax, post type with limit
+	 */
+	public function it_should_allow_getting_by_tax_post_type_with_limit() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_2' => [ 'tax_1' => [ 'term_11' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 20, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [
+			'taxonomy'  => 'tax_1',
+			'limit'     => 10,
+			'post_type' => 'post_type_1'
+		] );
+
+		Test::assertCount( 1, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayNotHasKey( 'tax_2', $out );
+		Test::assertCount( 10, $out['tax_1'] );
+		Test::assertCount( 10, array_intersect( $ids['post_type_1'], $out['tax_1'] ) );
+	}
+
+	/**
+	 * @test
+	 * it should allow getting by multiple taxonomies
+	 */
+	public function it_should_allow_getting_by_multiple_taxonomies() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_2' => [ 'tax_2' => [ 'term_21' ] ],
+			'post_type_3' => [ 'tax_3' => [ 'term_31' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [
+			'taxonomy' => [ 'tax_1', 'tax_2' ]
+		] );
+
+		Test::assertCount( 2, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayHasKey( 'tax_2', $out );
+		Test::assertArrayNotHasKey( 'tax_3', $out );
+		Test::assertCount( 5, $out['tax_1'] );
+		Test::assertCount( 5, $out['tax_2'] );
+	}
+
+	/**
+	 * @test
+	 * it should allow getting unrestricted posts by multi post types
+	 */
+	public function it_should_allow_getting_unrestricted_posts_by_multi_post_types() {
+		$post_types = [
+			'post_type_1' => [ 'tax_1' => [ 'term_11' ] ],
+			'post_type_2' => [ 'tax_2' => [ 'term_21' ] ],
+			'post_type_3' => [ 'tax_3' => [ 'term_31' ] ]
+		];
+
+		$this->register_post_types_tax_terms( $post_types );
+
+		$ids = [ ];
+		foreach ( array_keys( $post_types ) as $pt ) {
+			$ids[ $pt ] = $this->factory->post->create_many( 5, [ 'post_type' => $pt ] );
+		}
+
+		$out = $this->sut->get_unrestricted_posts( [
+			'post_type' => [ 'post_type_1', 'post_type_2' ]
+		] );
+
+		Test::assertCount( 2, $out );
+		Test::assertArrayHasKey( 'tax_1', $out );
+		Test::assertArrayHasKey( 'tax_2', $out );
+		Test::assertArrayNotHasKey( 'tax_3', $out );
+		Test::assertCount( 5, $out['tax_1'] );
+		Test::assertCount( 5, $out['tax_2'] );
+	}
+
+	/**
 	 * @param $post_types
 	 *
 	 * @return array
