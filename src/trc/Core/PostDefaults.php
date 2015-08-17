@@ -58,10 +58,15 @@ class trc_Core_PostDefaults {
 			$wanted_post_types = is_array( $args['post_type'] ) ? $args['post_type'] : array( $args['post_type'] );
 		}
 
+		$has_limit = $limit = $args['limit'] ? $args['limit'] : false;
+
 		$found_by_post_type = array();
 		$taxonomies         = array_keys( $this->user_slug_providers );
 		$posts              = array();
 		foreach ( $taxonomies as $tax ) {
+			if ( $has_limit && $limit <= 0 ) {
+				break;
+			}
 			$post_types = $this->get_restricted_post_types_for_taxonomy( $tax );
 
 			if ( $wanted_post_types ) {
@@ -70,7 +75,19 @@ class trc_Core_PostDefaults {
 
 			$found_posts = array();
 			foreach ( $post_types as $post_type ) {
-				$unrestricted_posts = $this->get_unrestricted_for_taxonomy( $post_type, $tax );
+				if ( $has_limit && $limit <= 0 ) {
+					break;
+				}
+
+				$unrestricted_posts = $this->get_unrestricted_for_taxonomy( $post_type, $tax, $limit );
+
+				if ( $has_limit ) {
+					$unrestricted_posts_count = count( $unrestricted_posts );
+					if ( $unrestricted_posts_count > $limit ) {
+						array_splice( $unrestricted_posts, 0, $limit );
+					}
+					$limit = $limit - $unrestricted_posts_count;
+				}
 
 				if ( count( $unrestricted_posts ) ) {
 					if ( is_string( $post_type ) ) {
@@ -88,31 +105,13 @@ class trc_Core_PostDefaults {
 			}
 		}
 
-		if ( ! empty( $posts ) && $args['limit'] && intval( $args['limit'] ) > 0 ) {
-			$_limit = intval( $args['limit'] );
-			$_posts = [ ];
-			foreach ( $posts as $taxonomy => $ids ) {
-				$count = count( $ids );
-				if ( $count <= $_limit ) {
-					$_limit -= $count;
-					$_posts[ $taxonomy ] = $ids;
-				} else {
-					$_ids                = array_values( array_splice( $ids, 0, $_limit ) );
-					$_posts[ $taxonomy ] = $_ids;
-					break;
-				}
-			}
-
-			$posts = $_posts;
-		}
-
 		return $posts;
 	}
 
-	protected function get_unrestricted_for_taxonomy( $post_type, $taxonomy ) {
+	protected function get_unrestricted_for_taxonomy( $post_type, $taxonomy, $limit = false ) {
 		$unrestricted_posts = get_posts( array(
 			'fields'           => 'ids',
-			'nopaging'         => true,
+			'posts_per_page'   => $limit ? $limit : - 1,
 			'suppress_filters' => true,
 			'post_type'        => $post_type,
 			'tax_query'        => array(
