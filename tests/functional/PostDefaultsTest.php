@@ -20,7 +20,7 @@ class trc_Core_PostDefaultsTest extends \WP_UnitTestCase {
 		$this->reset_taxonomies();
 	}
 
-	private function reset_taxonomies() {
+	protected function reset_taxonomies() {
 		global $wp_taxonomies;
 		$wp_taxonomies = [ ];
 	}

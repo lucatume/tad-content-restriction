@@ -61,7 +61,12 @@ class trc_Core_Plugin {
 	/**
 	 * @var trc_Core_Scheduler
 	 */
-	public $worker;
+	public $scheduler;
+
+	/**
+	 * @var trc_Core_PostRestrictions
+	 */
+	public $post_restrictions;
 
 	/**
 	 * @var array An array of key/value sets to avoid global constants
@@ -83,8 +88,9 @@ class trc_Core_Plugin {
 			                                                                  ->init();
 			self::$instance->query_restrictor    = trc_Core_QueryRestrictor::instance()
 			                                                               ->init();
-			self::$instance->worker              = trc_Core_Scheduler::instance()
+			self::$instance->scheduler              = trc_Core_Scheduler::instance()
 			                                                         ->schedule();
+			self::$instance->post_restrictions = trc_Core_PostRestrictions::instance()->init();
 		}
 
 		return self::$instance;
