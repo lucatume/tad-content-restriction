@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Core_PostRestrictions extends trc_Core_AbstractUserSlugProviderClient{
+class trc_Core_PostRestrictions extends trc_Core_AbstractUserSlugProviderClient {
 
 	/**
 	 * @var static
@@ -10,8 +10,7 @@ class trc_Core_PostRestrictions extends trc_Core_AbstractUserSlugProviderClient{
 
 	public static function instance() {
 		if ( empty( self::$instance ) ) {
-			self:
-			$instance = new self();
+			self::$instance = new self();
 		}
 
 		return self::$instance;
@@ -22,5 +21,11 @@ class trc_Core_PostRestrictions extends trc_Core_AbstractUserSlugProviderClient{
 	}
 
 	public function apply_default_restrictions( array $unrestricted_posts = array() ) {
+		foreach ( $unrestricted_posts as $taxonomy => $post_ids ) {
+			$terms = $this->user_slug_providers[ $taxonomy ]->get_default_post_terms();
+			foreach ( $post_ids as $post_id ) {
+				wp_set_object_terms( $post_id, $terms, $taxonomy, true );
+			}
+		}
 	}
 }
