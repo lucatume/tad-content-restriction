@@ -80,17 +80,12 @@ class trc_Core_Plugin {
 			self::$instance->taxonomies          = trc_Core_RestrictingTaxonomies::instance();
 			self::$instance->user                = trc_Core_User::instance();
 			self::$instance->post_types          = trc_Core_PostTypes::instance();
-			self::$instance->query_vars          = trc_Core_QueryVars::instance()
-			                                                         ->init();
-			self::$instance->admin_page          = trc_UI_AdminPage::instance()
-			                                                       ->init();
-			self::$instance->template_redirector = trc_Core_TemplateRedirector::instance()
-			                                                                  ->init();
-			self::$instance->query_restrictor    = trc_Core_QueryRestrictor::instance()
-			                                                               ->init();
-			self::$instance->scheduler              = trc_Core_Scheduler::instance()
-			                                                         ->schedule();
-			self::$instance->post_restrictions = trc_Core_PostRestrictions::instance()->init();
+			self::$instance->query_vars          = trc_Core_QueryVars::instance()->init();
+			self::$instance->admin_page          = trc_UI_AdminPage::instance()->init();
+			self::$instance->template_redirector = trc_Core_TemplateRedirector::instance()->init();
+			self::$instance->query_restrictor    = trc_Core_QueryRestrictor::instance()->init();
+			self::$instance->scheduler           = trc_Core_Scheduler::instance()->schedule();
+			self::$instance->post_restrictions   = trc_Core_PostRestrictions::instance()->init();
 		}
 
 		return self::$instance;
