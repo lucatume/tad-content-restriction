@@ -66,7 +66,8 @@ class trc_Core_QueryRestrictor implements trc_Core_QueryRestrictorInterface {
 	 * @return bool
 	 */
 	public function should_restrict_query( WP_Query &$query ) {
-		if ( empty( $this->taxonomies->get_restricting_taxonomies_for( $query->get( 'post_type', array( 'post' ) ) ) ) ) {
+		$restricting_taxonomies_for_post_type = $this->taxonomies->get_restricting_taxonomies_for( $query->get( 'post_type', array( 'post' ) ) );
+		if ( empty( $restricting_taxonomies_for_post_type ) ) {
 			return false;
 		}
 

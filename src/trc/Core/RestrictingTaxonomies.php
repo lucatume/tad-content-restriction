@@ -52,7 +52,8 @@ class trc_Core_RestrictingTaxonomies implements trc_Core_RestrictingTaxonomiesIn
 		$taxonomies = array();
 
 		foreach ( $wp_taxonomies as $taxonomy ) {
-			if ( empty( array_intersect( $post_types, $taxonomy->object_type ) ) ) {
+			$restricted_post_types = array_intersect( $post_types, $taxonomy->object_type );
+			if ( empty( $restricted_post_types ) ) {
 				continue;
 			}
 			$taxonomies[] = $taxonomy->name;

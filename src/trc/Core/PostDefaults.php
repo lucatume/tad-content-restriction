@@ -1,7 +1,7 @@
 <?php
 
 
-class trc_Core_PostDefaults extends trc_Core_AbstractUserSlugProviderClient{
+class trc_Core_PostDefaults extends trc_Core_AbstractUserSlugProviderClient {
 
 	/**
 	 * @var static
@@ -10,11 +10,11 @@ class trc_Core_PostDefaults extends trc_Core_AbstractUserSlugProviderClient{
 
 
 	public static function instance() {
-		if ( empty( static::$instance ) ) {
-			static::$instance = new static();
+		if ( empty( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return static::$instance;
+		return self::$instance;
 	}
 
 	public function has_unrestricted_posts() {
@@ -41,7 +41,7 @@ class trc_Core_PostDefaults extends trc_Core_AbstractUserSlugProviderClient{
 			throw new InvalidArgumentException( 'Limit parameter must be an int, a bool or null.' );
 		}
 
-		if ( ! ( $args['post_type'] === false || is_string( $args['post_type']) || is_array( $args['post_type'] )  ) ) {
+		if ( ! ( $args['post_type'] === false || is_string( $args['post_type'] ) || is_array( $args['post_type'] ) ) ) {
 			throw new InvalidArgumentException( 'Post type parameter must be a string, an array of strings or false.' );
 		}
 
@@ -111,18 +111,10 @@ class trc_Core_PostDefaults extends trc_Core_AbstractUserSlugProviderClient{
 	}
 
 	protected function get_unrestricted_for_taxonomy( $post_type, $taxonomy, $limit = false ) {
-		$unrestricted_posts = get_posts( array(
-			'fields'           => 'ids',
-			'posts_per_page'   => $limit ? $limit : - 1,
-			'suppress_filters' => true,
-			'post_type'        => $post_type,
-			'tax_query'        => array(
-				array(
-					'taxonomy' => $taxonomy,
-					'operator' => 'NOT EXISTS'
-				)
-			)
-		) );
+		$unrestricted_posts = get_posts( array( 'fields'           => 'ids', 'posts_per_page' => $limit ? $limit : - 1,
+		                                        'suppress_filters' => true, 'post_type' => $post_type,
+		                                        'tax_query'        => array( array( 'taxonomy' => $taxonomy,
+		                                                                            'operator' => 'NOT EXISTS' ) ) ) );
 
 		return $unrestricted_posts;
 	}
@@ -136,9 +128,10 @@ class trc_Core_PostDefaults extends trc_Core_AbstractUserSlugProviderClient{
 		$tax_object = get_taxonomy( $taxonomy );
 		$post_types = $tax_object->object_type;
 
-		$slug_provider = $this->user_slug_providers[ $taxonomy ];
-		if ( empty( $slug_provider->get_default_post_terms() ) ) {
-			return [ ];
+		$slug_provider      = $this->user_slug_providers[ $taxonomy ];
+		$default_post_terms = $slug_provider->get_default_post_terms();
+		if ( empty( $default_post_terms ) ) {
+			return array();
 		}
 
 		return is_array( $post_types ) ? $post_types : array( $post_types );
