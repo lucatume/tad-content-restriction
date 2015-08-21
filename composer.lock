@@ -103,11 +103,11 @@
         },
         {
             "name": "lucatume/tad-reschedule",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/tad-reschedule.git",
-                "reference": "5ffe6a1a132c5218d51a8b80e80854c3993bfa18"
+                "reference": "5e1057bc4e3a9400d4a2b1943142c26876382499"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -144,7 +144,7 @@
                 }
             ],
             "description": "Easy cron event rescheduling in WordPress",
-            "time": "2015-08-07 14:35:44"
+            "time": "2015-08-21 18:01:49"
         },
         {
             "name": "xrstf/composer-php52",
