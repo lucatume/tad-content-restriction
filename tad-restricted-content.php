@@ -18,7 +18,6 @@ if ( ! function_exists( 'trc_load' ) ) {
 		$plugin->file = __FILE__;
 		$plugin->url  = plugins_url( '/', __FILE__ );
 
-		$plugin->post_restrictor->hook();
 	}
 }
 
