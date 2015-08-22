@@ -11,4 +11,5 @@ return array(
     $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     $vendorDir . '/lucatume/tad-reschedule/tad-reschedule.php',
     $vendorDir . '/webdevstudios/cmb2/init.php',
+    $vendorDir . '/lucatume/tad-reschedule/tad-reschedule.php',
 );
