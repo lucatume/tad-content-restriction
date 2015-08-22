@@ -18,17 +18,23 @@
     {
       "type": "git",
       "url": "https://github.com/lucatume/tad-reschedule.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/WebDevStudios/CMB2.git"
     }
   ],
   "require": {
     "composer/installers": "~1.0",
     "xrstf/composer-php52": "1.*",
-    "lucatume/tad-reschedule": "~1.0"
+    "lucatume/tad-reschedule": "~1.0",
+    "webdevstudios/cmb2": "~2.1"
   },
   "extra": {
     "installer-paths": {
       "vendor/{$vendor}/{$name}": [
-        "lucatume/tad-reschedule"
+        "lucatume/tad-reschedule",
+        "webdevstudios/cmb2"
       ]
     }
   },
@@ -39,7 +45,10 @@
   "autoload": {
     "psr-0": {
       "trc_": "src/"
-    }
+    },
+    "files": [
+      "vendor/webdevstudios/cmb2/init.php"
+    ]
   },
   "scripts": {
     "post-install-cmd": [
