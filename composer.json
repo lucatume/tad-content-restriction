@@ -47,18 +47,22 @@
       "trc_": "src/"
     },
     "files": [
-      "vendor/webdevstudios/cmb2/init.php"
+      "vendor/webdevstudios/cmb2/init.php",
+      "vendor/lucatume/tad-reschedule/tad-reschedule.php"
     ]
   },
   "scripts": {
     "post-install-cmd": [
-      "xrstf\\Composer52\\Generator::onPostInstallCmd"
+      "xrstf\\Composer52\\Generator::onPostInstallCmd",
+      "grunt after-composer-update --verbose"
     ],
     "post-update-cmd": [
-      "xrstf\\Composer52\\Generator::onPostInstallCmd"
+      "xrstf\\Composer52\\Generator::onPostInstallCmd",
+      "grunt after-composer-update --verbose"
     ],
     "post-autoload-dump": [
-      "xrstf\\Composer52\\Generator::onPostInstallCmd"
+      "xrstf\\Composer52\\Generator::onPostInstallCmd",
+      "grunt after-composer-update --verbose"
     ]
   }
 }
