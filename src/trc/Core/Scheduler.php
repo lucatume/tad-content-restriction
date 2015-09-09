@@ -20,6 +20,10 @@ class trc_Core_Scheduler {
 	}
 
 	public function schedule() {
+		add_action( 'wp_loaded', array( self::$instance, '_schedule' ) );
+	}
+
+	public function _schedule() {
 		// each 2' apply the default restrictions to some unrestricted posts
 		$post_defaults = trc_Core_PostDefaults::instance();
 
@@ -28,10 +32,9 @@ class trc_Core_Scheduler {
 			$post_defaults->set_user_slug_provider_for( $taxonomy, $slug_provider );
 		}
 
-		tad_reschedule( 'trc/core/unrestricted_posts/check' )
-			->each( 120 )
-			->until( array( $post_defaults, 'has_unrestricted_posts' ) )
-			->with_args( $post_defaults->get_unrestricted_posts( array( 'limit' => 100 ) ) );
+		tad_reschedule( 'trc/core/unrestricted_posts/check' )->each( 120 )->until( array(
+			$post_defaults,
+			'has_unrestricted_posts'
+		) )->with_args( $post_defaults->get_unrestricted_posts( array( 'limit' => 100 ) ) );
 	}
-
 }
