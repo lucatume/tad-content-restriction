@@ -21,7 +21,7 @@ class trc_Core_PostRestrictions extends trc_Core_AbstractUserSlugProviderClient 
 	}
 
 	public function on_unrestricted_posts_check( array $unrestricted_posts = array() ) {
-		$taxonomy = $this->init_slug_providers();
+		$this->init_slug_providers();
 		$this->apply_default_restrictions( $unrestricted_posts );
 	}
 
