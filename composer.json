@@ -47,7 +47,6 @@
       "trc_": "src/"
     },
     "files": [
-      "vendor/webdevstudios/cmb2/init.php",
       "vendor/lucatume/tad-reschedule/tad-reschedule.php"
     ]
   },

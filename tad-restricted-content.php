@@ -11,8 +11,12 @@
 
 include 'vendor/autoload_52.php';
 
+
 if ( ! function_exists( 'trc_load' ) ) {
 	function trc_load() {
+		// CMB2 Init
+		require_once(dirname(__FILE__) . '/vendor/webdevstudios/cmb2/init.php');
+
 		$plugin = trc_Core_Plugin::instance();
 
 		$plugin->file = __FILE__;
